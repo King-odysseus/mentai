@@ -87,6 +87,7 @@ Cognitive1 is the memory layer. Every session, every concept mastered, every bug
 |---------|-------------|
 | **Project workspace** | Create and manage learning projects. Each project has a tech stack, description, and source files. |
 | **AI tutor chat** | Conversational interface with the tutor. Tutor knows the current project, the roadmap, and the learner's history. |
+| **Voice tutor (speak toggle)** | Human-like voice conversation. Speak to the tutor (STT) and hear responses out loud (TTS). Toggleable — text is primary, voice is an option like ChatGPT's voice mode. |
 | **roadmap.sh integration** | Pull the Python backend + full-stack roadmap as the curriculum backbone. |
 | **Cognitive1 integration** | Persist learning progress, concept exposure, session history. |
 | **Session time awareness** | Tutor adapts responses to the available time window (micro vs deep session). |
@@ -121,7 +122,9 @@ Cognitive1 is the memory layer. Every session, every concept mastered, every bug
 | **Code Editor** | CodeMirror 6 (vanilla JS embed) | Lighter than Monaco. Real Python execution on the backend — real filesystem, real pip, real git. |
 | **Chat** | WebSocket streaming via FastAPI | Tutor responses appear word-by-word. Feels alive, not like waiting for a page load. |
 | **Database** | SQLite (MVP) → PostgreSQL | Simple start, easy migration path. |
-| **AI Integration** | DeepSeek API | Powers the tutor. |
+| **AI Integration** | DeepSeek API | Powers the tutor's text intelligence. |
+| **Voice TTS** | Browser SpeechSynthesis (MVP) → ElevenLabs or OpenAI TTS | Text-to-speech for tutor responses. Start with free browser API, upgrade to premium TTS later for human-like quality. |
+| **Voice STT** | Browser SpeechRecognition (MVP) → Whisper | Speech-to-text for learner voice input. Free browser API first, upgrade later. |
 | **Curriculum** | Scraped from roadmap.sh, freeCodeCamp, The Odin Project, and others | Unified curriculum model normalized from multiple sources. Extensible — add more sources as needed. |
 | **Memory** | Cognitive1 MCP | Brain, session history, concept tracking, pattern recognition. |
 | **Project Files** | On disk (real filesystem) | Real git, real pip, real everything. Projects are portable and Cognitive1 can read them directly. |
@@ -138,6 +141,39 @@ The frontend grows with the learner's skills — not ahead of them.
 | **Later** | WebSockets, async Python | Real-time tutor chat streaming, live code output |
 | **Eventually** | REST APIs, fetch, DOM | Partial-page updates, smoother transitions |
 | **Beyond** | React, component architecture, state | Platform frontend can be rebuilt in React as a learning project itself |
+
+---
+
+## Voice Tutor
+
+The tutor can speak and listen. This is an optional layer on top of the text chat — the learner toggles it on or off, similar to ChatGPT's voice mode.
+
+### Text-to-Speech (Tutor Speaks)
+
+| Stage | Engine | Quality |
+|-------|--------|---------|
+| **MVP (free)** | Browser SpeechSynthesis API | Functional but robotic. Ships immediately with zero cost. |
+| **Upgrade** | ElevenLabs or OpenAI TTS | Human-like prosody, natural pausing, warm tone. Streaming: audio starts playing as soon as the first sentence is generated. |
+
+### Speech-to-Text (Learner Speaks)
+
+| Stage | Engine | Quality |
+|-------|--------|---------|
+| **MVP (free)** | Browser SpeechRecognition API | Good accuracy in quiet environments. Zero cost, zero setup. |
+| **Upgrade** | OpenAI Whisper | Better accuracy, handles code terms, accents, and noisy environments. |
+
+### How It Works
+
+1. Learner clicks the speaker icon in the chat panel — voice mode on.
+2. Microphone activates (browser SpeechRecognition captures speech).
+3. Learner speaks a question. Text appears in the chat input. Sent to DeepSeek.
+4. DeepSeek's text response streams back — displayed in chat AND spoken by TTS simultaneously.
+5. Voice stops when the response is done, or learner can interrupt (tap to stop speaking).
+6. Learner clicks speaker icon again — voice mode off, back to text-only.
+
+### Free Tier Reality Check
+
+ElevenLabs free tier: ~10 mins/month. Fine for a few sessions but not daily use. Browser SpeechSynthesis is unlimited and free — start there. Upgrade to paid TTS when the experience warrants it.
 
 ---
 
@@ -159,7 +195,9 @@ Three-panel workspace for learning sessions. Dashboard for overview.
 │          ├──────────────────────┤
 │          │                      │
 │          │    AI Tutor Chat     │
-│          │    (streaming)       │
+│          │    (streaming text)  │
+│          │    [speaker icon]    │
+│          │    (toggle voice)    │
 │          │                      │
 └──────────┴──────────────────────┘
 ```
@@ -186,6 +224,7 @@ Project overview, progress charts, concept tracker, session history, daily goals
 2. **Curriculum:** Scraped from roadmap.sh, freeCodeCamp, The Odin Project, and other sources. Ingested into a unified curriculum model. Extensible to add more sources later.
 3. **UI:** Dashboard for overview + three-panel workspace (file tree, code editor, chat) for learning sessions.
 4. **Project files:** On disk. Real filesystem, real git, real pip. Portable and Cognitive1-readable.
+5. **Voice tutor:** Speak toggle like ChatGPT voice mode. Browser SpeechSynthesis + SpeechRecognition for free MVP. Upgrade path to ElevenLabs/OpenAI TTS and Whisper STT for human-like quality.
 
 ---
 
