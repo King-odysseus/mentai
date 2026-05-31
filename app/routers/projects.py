@@ -353,6 +353,59 @@ async def run_file(
 
 
 # ---------------------------------------------------------------------------
+# Static file serving (Phase 4 — live preview)
+# ---------------------------------------------------------------------------
+from fastapi.responses import FileResponse, HTMLResponse
+from urllib.parse import unquote
+
+
+@router.get("/{project_id}/serve/{file_path:path}")
+async def serve_project_file(
+    project_id: int,
+    file_path: str,
+    db: AsyncSession = Depends(get_db),
+):
+    """Serve a project file as static content for in-browser preview.
+
+    HTML/CSS/JS files in the project workspace are served directly,
+    enabling iframe-based live preview with relative links between files.
+    """
+    result = await db.execute(
+        select(LearningProject).where(LearningProject.id == project_id)
+    )
+    project = result.scalars().first()
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found.")
+
+    project_dir = (settings.workspace_dir / project.directory).resolve()
+    requested = (project_dir / unquote(file_path)).resolve()
+
+    # Security: prevent path traversal
+    if not str(requested).startswith(str(project_dir)):
+        raise HTTPException(status_code=403, detail="Path traversal denied.")
+    if not requested.exists() or not requested.is_file():
+        raise HTTPException(status_code=404, detail="File not found.")
+
+    # Determine media type for proper rendering
+    ext = requested.suffix.lower()
+    media_types = {
+        ".html": "text/html",
+        ".css": "text/css",
+        ".js": "application/javascript",
+        ".json": "application/json",
+        ".svg": "image/svg+xml",
+        ".png": "image/png",
+        ".jpg": "image/jpeg",
+        ".woff2": "font/woff2",
+    }
+
+    return FileResponse(
+        str(requested),
+        media_type=media_types.get(ext, "text/plain"),
+    )
+
+
+# ---------------------------------------------------------------------------
 # Comparison endpoints (Phase 3)
 # ---------------------------------------------------------------------------
 @router.get("/compare/{id_a}/{id_b}")

@@ -38,8 +38,14 @@ const Editor = {
     });
 
     // Listen for file selection events from the file tree
+    const projectId = document.querySelector(".workspace")?.dataset.projectId;
     document.addEventListener("file-selected", (e) => {
       this.loadFile(e.detail.path, e.detail.content);
+      // Auto-preview HTML/rendered files on selection
+      const ext = e.detail.path.split(".").pop().toLowerCase();
+      if (["html", "css", "js"].includes(ext)) {
+        previewFile(e.detail.path, projectId);
+      }
     });
 
     // Save button
@@ -47,6 +53,12 @@ const Editor = {
 
     // Run button
     document.getElementById("btn-run-file").addEventListener("click", () => this.run());
+
+    // Preview button
+    document.getElementById("btn-preview-file").addEventListener("click", () => {
+      if (!this.currentPath) return;
+      previewFile(this.currentPath, projectId);
+    });
 
     // Review button
     document.getElementById("btn-review-file").addEventListener("click", () => this.review());
@@ -143,6 +155,16 @@ const Editor = {
 
       this.originalContent = content;
       document.getElementById("editor-title").textContent = `📝 ${this.currentPath}`;
+
+      // Refresh live preview if the preview is visible and file is renderable
+      const previewFrame = document.getElementById("preview-frame");
+      const ext = this.currentPath.split(".").pop().toLowerCase();
+      if (!previewFrame.hidden && ["html", "css", "js"].includes(ext)) {
+        const url = new URL(previewFrame.src, location.origin);
+        url.searchParams.set("_t", Date.now());
+        previewFrame.src = url.toString();
+      }
+
       // Brief visual feedback
       const btn = document.getElementById("btn-save-file");
       btn.textContent = "✅ Formatted & Saved";
@@ -213,12 +235,55 @@ const Editor = {
   },
 };
 
-// Output panel resize and close
+// Output panel resize, close, tab switching, and live preview
 document.addEventListener("DOMContentLoaded", () => {
   // Close button
   document.getElementById("btn-close-output")?.addEventListener("click", () => {
     document.getElementById("output-panel").hidden = true;
   });
+
+  // Tab switching: Output vs Preview
+  const outputContent = document.getElementById("output-content");
+  const previewFrame = document.getElementById("preview-frame");
+  document.querySelectorAll(".output-tab").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      document.querySelectorAll(".output-tab").forEach((t) =>
+        t.classList.remove("active")
+      );
+      tab.classList.add("active");
+      const panel = tab.dataset.panel;
+      if (panel === "output-tab-preview") {
+        outputContent.hidden = true;
+        previewFrame.hidden = false;
+      } else {
+        outputContent.hidden = false;
+        previewFrame.hidden = true;
+      }
+    });
+  });
+
+  // Live preview: load current file in iframe
+  window.previewFile = function (filePath, projectId) {
+    const ext = filePath.split(".").pop().toLowerCase();
+    const isRenderable = ["html", "css", "js", "svg"].includes(ext);
+    if (!isRenderable) {
+      outputContent.hidden = false;
+      previewFrame.hidden = true;
+      document.querySelector('.output-tab[data-panel="output-tab-console"]')?.click();
+      return;
+    }
+
+    const panel = document.getElementById("output-panel");
+    panel.hidden = false;
+
+    // Switch to Preview tab
+    const previewTab = document.querySelector('.output-tab[data-panel="output-tab-preview"]');
+    previewTab?.click();
+
+    // For HTML files, use serve endpoint so relative CSS/JS links work
+    const serveUrl = `/api/projects/${projectId}/serve/${encodeURIComponent(filePath)}`;
+    previewFrame.src = serveUrl;
+  };
 
   // Drag-to-resize output panel
   const handle = document.getElementById("output-resize-handle");

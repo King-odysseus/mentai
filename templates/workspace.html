@@ -27,20 +27,25 @@
       <div class="editor-actions">
         <button class="btn btn-sm btn-primary" id="btn-save-file">💾 Save</button>
         <button class="btn btn-sm" id="btn-run-file">▶ Run</button>
+        <button class="btn btn-sm" id="btn-preview-file">🌐 Preview</button>
         <button class="btn btn-sm" id="btn-review-file">🔍 Review</button>
       </div>
     </div>
     <div class="panel-body editor-body" id="editor-container">
       <p class="empty-state">Select a file from the tree to start editing.</p>
     </div>
-    <!-- Run output -->
+    <!-- Run output / Live preview -->
     <div class="output-panel" id="output-panel" hidden>
       <div class="output-resize-handle" id="output-resize-handle"></div>
       <div class="output-header">
-        <span>📤 Output</span>
+        <div class="output-tabs">
+          <button class="output-tab active" data-panel="output-tab-console">📤 Output</button>
+          <button class="output-tab" data-panel="output-tab-preview">🌐 Preview</button>
+        </div>
         <button class="btn-icon" id="btn-close-output">✕</button>
       </div>
       <pre class="output-content" id="output-content"></pre>
+      <iframe class="preview-frame" id="preview-frame" hidden sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
     </div>
   </section>
 
