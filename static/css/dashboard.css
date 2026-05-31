@@ -405,66 +405,69 @@ dialog h2 { margin-bottom: var(--space-lg); }
 .compare-table .mastery-not_seen { color: var(--color-text-secondary); }
 
 /* ==========================================================================
-   Custom Roadmap
+   AI Learning Path
    ========================================================================== */
-.roadmap-list { display: flex; flex-direction: column; gap: var(--space-sm); }
-.roadmap-module {
+.learning-path-list { display: flex; flex-direction: column; gap: var(--space-sm); }
+.learning-path-project {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-xs);
+}
+.lp-module {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   overflow: hidden;
 }
-.roadmap-module-header {
+.lp-module-header {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
   padding: var(--space-sm) var(--space-md);
   background: var(--color-bg);
-  border-bottom: 1px solid var(--color-border);
+  cursor: pointer;
+  user-select: none;
 }
-.roadmap-module-title {
-  font-weight: 600;
-  font-size: var(--font-size-sm);
-}
-.roadmap-module-source {
+.lp-module-header:hover { background: var(--color-border); }
+.lp-module-toggle {
   font-size: 0.65rem;
   color: var(--color-text-secondary);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 10px;
-  padding: 1px 8px;
+  width: 12px;
 }
-.roadmap-concepts {
-  padding: var(--space-sm) var(--space-md);
+.lp-module-title {
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  flex: 1;
+}
+.lp-module-count {
+  font-size: 0.65rem;
+  color: var(--color-text-secondary);
+}
+.lp-concepts {
+  padding: var(--space-xs) var(--space-md) var(--space-sm);
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
-.roadmap-concept {
+.lp-concept {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 2px 0;
+  gap: var(--space-sm);
+  padding: var(--space-xs) 0;
   font-size: var(--font-size-sm);
 }
-.roadmap-concept-diff {
-  font-size: 0.65rem;
+.lp-concept-title {
+  font-weight: 500;
+  flex: 1;
+}
+.lp-concept-desc {
+  font-size: 0.7rem;
   color: var(--color-text-secondary);
-  text-transform: capitalize;
+  flex: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-.roadmap-btn-edit, .roadmap-btn-delete {
-  padding: 2px 4px;
-  font-size: 0.8rem;
-  opacity: 0.5;
-}
-.roadmap-btn-edit:hover, .roadmap-btn-delete:hover { opacity: 1; }
-.roadmap-btn-add-concept {
-  margin-top: 4px;
-  font-size: 0.75rem;
-}
-
-/* Roadmap import buttons */
-.roadmap-actions {
-  display: flex;
-  gap: var(--space-xs);
-  flex-wrap: wrap;
+.lp-teach-btn {
+  font-size: 0.7rem;
+  padding: 2px 8px;
 }

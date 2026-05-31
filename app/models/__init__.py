@@ -2,11 +2,5 @@
 
 from app.models.project import LearningProject
 from app.models.session import LearningSession
-from app.models.concept import (
-    CurriculumModule,
-    Concept,
-    ConceptExposure,
-    CurriculumProject,
-    DesignPattern,
-    Goal,
-)
+from app.models.concept import ConceptExposure, DesignPattern, Goal
+from app.models.user_profile import UserProfile

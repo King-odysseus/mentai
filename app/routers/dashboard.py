@@ -67,9 +67,9 @@ async def dashboard_stats(db: AsyncSession = Depends(get_db)):
 
 @router.get("/dashboard/progress")
 async def progress_data(db: AsyncSession = Depends(get_db)):
-    """Return detailed progress data for charts (session history, mastery, totals)."""
+    """Return detailed progress data for charts."""
     from app.models.session import LearningSession
-    from app.models.concept import ConceptExposure, Concept
+    from app.models.concept import ConceptExposure
     from sqlalchemy import select, func
 
     # Session history (last 14 days)
@@ -99,15 +99,14 @@ async def progress_data(db: AsyncSession = Depends(get_db)):
 
     # Recently mastered concepts
     mastered_result = await db.execute(
-        select(ConceptExposure, Concept.title)
-        .join(Concept, ConceptExposure.concept_id == Concept.id)
+        select(ConceptExposure)
         .where(ConceptExposure.mastery == "mastered")
         .order_by(ConceptExposure.last_reviewed_at.desc())
         .limit(5)
     )
     recently_mastered = [
-        {"concept": title, "encounter_count": exp.encounter_count}
-        for exp, title in mastered_result.all()
+        {"concept": exp.concept_title, "encounter_count": exp.encounter_count}
+        for exp in mastered_result.scalars().all()
     ]
 
     # Total learning time

@@ -10,52 +10,44 @@ from app.schemas.concept import ConceptExposureResponse, MasteryUpdate
 router = APIRouter()
 
 
-@router.get("/project/{project_id}", response_model=list[ConceptExposureResponse])
+@router.get("/project/{project_id}")
 async def get_project_concepts(project_id: int, db: AsyncSession = Depends(get_db)):
     """Get all concept mastery records for a project."""
-    records = await concept_tracker.get_mastery_for_project(db, project_id)
-    return [ConceptExposureResponse(**r) for r in records]
+    return await concept_tracker.get_mastery_for_project(db, project_id)
 
 
-@router.post("/expose", response_model=ConceptExposureResponse)
+@router.post("/expose")
 async def expose_concept(
     project_id: int,
-    concept_id: int,
+    concept_title: str,
+    module_title: str | None = None,
     notes: str | None = None,
     db: AsyncSession = Depends(get_db),
 ):
     """Record that a concept was encountered in a session."""
     exposure = await concept_tracker.record_concept_exposure(
-        db, project_id, concept_id, notes
+        db, project_id, concept_title, module_title, notes
     )
-    # Fetch the concept title for the response
-    from app.models.concept import Concept
-    from sqlalchemy import select
-    concept_result = await db.execute(
-        select(Concept).where(Concept.id == concept_id)
-    )
-    concept = concept_result.scalars().first()
-    return ConceptExposureResponse(
-        id=exposure.id,
-        project_id=exposure.project_id,
-        concept_id=exposure.concept_id,
-        mastery=exposure.mastery,
-        encounter_count=exposure.encounter_count,
-        last_reviewed_at=exposure.last_reviewed_at,
-        notes=exposure.notes,
-        concept_title=concept.title if concept else None,
-        concept_difficulty=concept.difficulty if concept else None,
-    )
+    return {
+        "id": exposure.id,
+        "project_id": exposure.project_id,
+        "concept_title": exposure.concept_title,
+        "module_title": exposure.module_title,
+        "mastery": exposure.mastery,
+        "encounter_count": exposure.encounter_count,
+        "last_reviewed_at": exposure.last_reviewed_at.isoformat(),
+        "notes": exposure.notes,
+    }
 
 
-@router.patch("/{exposure_id}/mastery", response_model=ConceptExposureResponse)
+@router.patch("/{exposure_id}/mastery")
 async def update_mastery(
     exposure_id: int,
     data: MasteryUpdate,
     db: AsyncSession = Depends(get_db),
 ):
     """Manually update the mastery level for a concept exposure."""
-    from app.models.concept import ConceptExposure, Concept
+    from app.models.concept import ConceptExposure
     from sqlalchemy import select
 
     result = await db.execute(
@@ -68,25 +60,18 @@ async def update_mastery(
     exposure.mastery = data.mastery
     if data.notes:
         exposure.notes = data.notes
-
     await db.flush()
 
-    concept_result = await db.execute(
-        select(Concept).where(Concept.id == exposure.concept_id)
-    )
-    concept = concept_result.scalars().first()
-
-    return ConceptExposureResponse(
-        id=exposure.id,
-        project_id=exposure.project_id,
-        concept_id=exposure.concept_id,
-        mastery=exposure.mastery,
-        encounter_count=exposure.encounter_count,
-        last_reviewed_at=exposure.last_reviewed_at,
-        notes=exposure.notes,
-        concept_title=concept.title if concept else None,
-        concept_difficulty=concept.difficulty if concept else None,
-    )
+    return {
+        "id": exposure.id,
+        "project_id": exposure.project_id,
+        "concept_title": exposure.concept_title,
+        "module_title": exposure.module_title,
+        "mastery": exposure.mastery,
+        "encounter_count": exposure.encounter_count,
+        "last_reviewed_at": exposure.last_reviewed_at.isoformat(),
+        "notes": exposure.notes,
+    }
 
 
 @router.get("/project/{project_id}/due")

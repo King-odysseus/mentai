@@ -1,9 +1,7 @@
-"""Concept mastery tracker — records and retrieves a learner's progress.
+"""Concept mastery tracker — records and retrieves learner progress.
 
-For each (project, concept) pair, tracks:
-- Exposure count (how many times they've encountered it)
-- Mastery level (introduced → practiced → confident → mastered)
-- Last review date (for spaced repetition logic)
+Concepts are now string-based (concept_title) — the AI creates them on-the-fly.
+For each (project, concept_title) pair, tracks mastery progression.
 """
 
 import logging
@@ -11,7 +9,7 @@ from datetime import datetime, timezone
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.concept import Concept, ConceptExposure
+from app.models.concept import ConceptExposure
 
 logger = logging.getLogger(__name__)
 
@@ -32,18 +30,19 @@ def next_mastery(current: str) -> str:
 async def record_concept_exposure(
     db: AsyncSession,
     project_id: int,
-    concept_id: int,
+    concept_title: str,
+    module_title: str | None = None,
     notes: str | None = None,
 ) -> ConceptExposure:
     """Record that the learner encountered a concept in a project.
 
-    If they've seen it before, increment the encounter count and bump mastery
-    if they've encountered it enough times. If it's new, create at 'introduced'.
+    Concepts are matched by title string — no FK to static table needed.
+    Auto-bumps mastery based on encounter count.
     """
     result = await db.execute(
         select(ConceptExposure).where(
             ConceptExposure.project_id == project_id,
-            ConceptExposure.concept_id == concept_id,
+            ConceptExposure.concept_title == concept_title,
         )
     )
     exposure = result.scalars().first()
@@ -52,7 +51,7 @@ async def record_concept_exposure(
         exposure.encounter_count += 1
         exposure.last_reviewed_at = datetime.now(timezone.utc)
 
-        # Auto-bump mastery based on encounter count
+        # Auto-bump mastery
         if exposure.encounter_count >= 7 and exposure.mastery == "confident":
             exposure.mastery = "mastered"
         elif exposure.encounter_count >= 4 and exposure.mastery == "practiced":
@@ -61,24 +60,26 @@ async def record_concept_exposure(
             exposure.mastery = "practiced"
 
         if notes:
-            # Append to existing notes
             existing = exposure.notes or ""
-            exposure.notes = f"{existing}\n[{datetime.now(timezone.utc):%Y-%m-%d}] {notes}".strip()
+            exposure.notes = (
+                f"{existing}\n[{datetime.now(timezone.utc):%Y-%m-%d}] {notes}".strip()
+            )
 
         logger.debug(
-            "Updated concept exposure: concept=%d, count=%d, mastery=%s",
-            concept_id, exposure.encounter_count, exposure.mastery,
+            "Updated concept: %s, count=%d, mastery=%s",
+            concept_title, exposure.encounter_count, exposure.mastery,
         )
     else:
         exposure = ConceptExposure(
             project_id=project_id,
-            concept_id=concept_id,
+            concept_title=concept_title,
+            module_title=module_title,
             mastery="introduced",
             encounter_count=1,
             notes=notes,
         )
         db.add(exposure)
-        logger.debug("New concept exposure: concept=%d", concept_id)
+        logger.debug("New concept: %s", concept_title)
 
     await db.flush()
 
@@ -87,10 +88,6 @@ async def record_concept_exposure(
         from app.services.cognitive1 import cognitive1
         from app.models.project import LearningProject
 
-        concept_result = await db.execute(
-            select(Concept.title).where(Concept.id == concept_id)
-        )
-        concept_title = concept_result.scalar() or "unknown"
         proj_result = await db.execute(
             select(LearningProject.name).where(LearningProject.id == project_id)
         )
@@ -109,47 +106,37 @@ async def record_concept_exposure(
 async def get_mastery_for_project(
     db: AsyncSession, project_id: int
 ) -> list[dict]:
-    """Get all concept mastery records for a project, with concept details joined."""
+    """Get all concept mastery records for a project."""
     result = await db.execute(
-        select(ConceptExposure, Concept.title, Concept.difficulty)
-        .join(Concept, ConceptExposure.concept_id == Concept.id)
+        select(ConceptExposure)
         .where(ConceptExposure.project_id == project_id)
         .order_by(ConceptExposure.last_reviewed_at.desc())
     )
-    rows = result.all()
+    exposures = result.scalars().all()
 
     return [
         {
-            "id": exposure.id,
-            "project_id": exposure.project_id,
-            "concept_id": exposure.concept_id,
-            "mastery": exposure.mastery,
-            "encounter_count": exposure.encounter_count,
-            "last_reviewed_at": exposure.last_reviewed_at.isoformat(),
-            "notes": exposure.notes,
-            "concept_title": concept_title,
-            "concept_difficulty": concept_difficulty,
+            "id": e.id,
+            "project_id": e.project_id,
+            "concept_title": e.concept_title,
+            "module_title": e.module_title,
+            "mastery": e.mastery,
+            "encounter_count": e.encounter_count,
+            "last_reviewed_at": e.last_reviewed_at.isoformat(),
+            "notes": e.notes,
         }
-        for exposure, concept_title, concept_difficulty in rows
+        for e in exposures
     ]
 
 
 async def get_concepts_due_for_review(
     db: AsyncSession, project_id: int, limit: int = 5
 ) -> list[dict]:
-    """Return concepts that are due for spaced-review.
-
-    Prioritizes:
-    1. Concepts seen only once (need reinforcement)
-    2. Concepts last reviewed more than 7 days ago
-    3. Concepts at 'introduced' or 'practiced' level (not yet mastered)
-    """
+    """Return concepts that are due for spaced-review."""
     from datetime import timedelta
-    cutoff = datetime.now(timezone.utc) - timedelta(days=7)
 
     result = await db.execute(
-        select(ConceptExposure, Concept.title)
-        .join(Concept, ConceptExposure.concept_id == Concept.id)
+        select(ConceptExposure)
         .where(
             ConceptExposure.project_id == project_id,
             ConceptExposure.mastery.in_(["introduced", "practiced"]),
@@ -160,16 +147,18 @@ async def get_concepts_due_for_review(
         )
         .limit(limit)
     )
-    rows = result.all()
+    exposures = result.scalars().all()
 
     return [
         {
-            "id": exposure.id,
-            "concept_id": exposure.concept_id,
-            "concept_title": title,
-            "mastery": exposure.mastery,
-            "encounter_count": exposure.encounter_count,
-            "days_since_review": (datetime.now(timezone.utc) - exposure.last_reviewed_at).days,
+            "id": e.id,
+            "concept_title": e.concept_title,
+            "module_title": e.module_title,
+            "mastery": e.mastery,
+            "encounter_count": e.encounter_count,
+            "days_since_review": (
+                datetime.now(timezone.utc) - e.last_reviewed_at
+            ).days,
         }
-        for exposure, title in rows
+        for e in exposures
     ]

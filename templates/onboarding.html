@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}MentAi — Onboarding{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/onboarding.css">
+{% endblock %}
+
+{% block content %}
+<div class="onboarding">
+  <header class="onboarding-header">
+    <h1>Welcome, {{ learner_name }}</h1>
+    <p>Let's build your personalized learning path. Mentor will ask a few questions.</p>
+  </header>
+
+  <div class="onboarding-chat" id="onboarding-chat">
+    <div class="onboarding-messages" id="onboarding-messages">
+      <div class="onboarding-msg tutor">
+        <p>Connecting to Mentor...</p>
+      </div>
+    </div>
+
+    <div class="onboarding-progress" id="onboarding-progress" hidden>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progress-bar-fill" style="width:0%"></div>
+      </div>
+      <span class="progress-text" id="progress-text">Step 0/8</span>
+    </div>
+
+    <div class="onboarding-hint" id="onboarding-hint" hidden></div>
+
+    <div class="onboarding-input-area">
+      <input
+        type="text"
+        id="onboarding-input"
+        placeholder="Type your answer..."
+        autofocus
+      />
+      <button class="btn btn-primary" id="btn-onboarding-send">Send</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/onboarding.js"></script>
+{% endblock %}

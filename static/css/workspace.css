@@ -326,3 +326,52 @@
 .specialist-database { color: #1a7f37; }
 .specialist-frontend { color: #cf222e; }
 .specialist-general { color: var(--color-text); }
+
+/* --------------------------------------------------------------------------
+   Learning Path Panel (below file tree in left panel)
+   -------------------------------------------------------------------------- */
+.learning-path-panel {
+  border-top: 2px solid var(--color-border);
+  max-height: 40%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.lp-panel-header {
+  padding: var(--space-xs) var(--space-md);
+  background: var(--color-bg);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+.lp-panel-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-xs) var(--space-sm);
+  font-size: 0.75rem;
+}
+.lp-panel-body .lp-module {
+  margin-bottom: 2px;
+}
+.lp-panel-body .lp-module-header {
+  padding: 2px var(--space-xs);
+  font-size: 0.7rem;
+}
+.lp-panel-body .lp-module-toggle { font-size: 0.55rem; }
+.lp-panel-body .lp-module-title { font-size: 0.7rem; }
+.lp-panel-body .lp-concepts { padding: 2px var(--space-sm) var(--space-xs); }
+.lp-panel-body .ws-lp-concept {
+  padding: 2px var(--space-xs);
+  cursor: pointer;
+  border-radius: 3px;
+  font-size: 0.7rem;
+}
+.lp-panel-body .ws-lp-concept:hover {
+  background: var(--color-bg);
+}
+.lp-panel-body .ws-lp-concept.lp-selected {
+  background: var(--color-primary);
+  color: #fff;
+}
+.lp-panel-body .lp-concept-title { font-size: 0.7rem; }

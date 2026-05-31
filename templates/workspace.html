@@ -6,7 +6,7 @@
 
 {% block content %}
 <div class="workspace" data-project-id="{{ project_id }}">
-  <!-- Left panel: File Tree -->
+  <!-- Left panel: File Tree + Learning Path -->
   <aside class="panel panel-left" id="file-panel">
     <div class="panel-header">
       <h3>📁 Files</h3>
@@ -17,6 +17,15 @@
     </div>
     <div class="panel-footer">
       <button class="btn btn-sm" id="btn-new-file">+ New File</button>
+    </div>
+    <!-- AI Learning Path -->
+    <div class="learning-path-panel" id="learning-path-panel">
+      <div class="lp-panel-header">
+        <span>📚 Learning Path</span>
+      </div>
+      <div class="lp-panel-body" id="learning-path-content">
+        <p class="empty-state">Loading...</p>
+      </div>
     </div>
   </aside>
 
@@ -99,6 +108,7 @@
 <script src="/static/js/workspace/file-tree.js"></script>
 <script src="/static/js/workspace/editor.js"></script>
 <script src="/static/js/workspace/chat.js"></script>
+<script src="/static/js/workspace/learning-path.js"></script>
 <script src="/static/js/workspace/voice.js"></script>
 <script src="/static/js/workspace/workspace.js"></script>
 {% endblock %}

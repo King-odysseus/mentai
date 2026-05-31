@@ -173,11 +173,99 @@ function escapeHtml(str) {
 }
 
 // ---------------------------------------------------------------------------
+// Learning Path — AI-generated personalized curriculum per project
+// ---------------------------------------------------------------------------
+async function loadLearningPath() {
+  const container = document.getElementById("learning-path-list");
+  try {
+    const data = await API.get("/api/projects");
+    const projects = data.projects || [];
+
+    // Find the most recent active project with a learning path
+    const activeProject = projects.find(
+      (p) => p.status === "active" && p.learning_path
+    );
+    if (!activeProject) {
+      container.innerHTML =
+        '<p class="empty-state">Create a project to get a personalized AI-generated learning path.</p>';
+      return;
+    }
+
+    let path;
+    try {
+      path = JSON.parse(activeProject.learning_path);
+    } catch {
+      container.innerHTML = '<p class="empty-state">Learning path is being generated...</p>';
+      return;
+    }
+
+    if (!path || !path.length) {
+      container.innerHTML = '<p class="empty-state">Learning path is being generated...</p>';
+      return;
+    }
+
+    let html = `<div class="learning-path-project">${escapeHtml(activeProject.name)}</div>`;
+    path.forEach((mod, mi) => {
+      html +=
+        `<div class="lp-module">` +
+        `<div class="lp-module-header" data-module="${mi}">` +
+        `<span class="lp-module-toggle">▶</span>` +
+        `<span class="lp-module-title">${escapeHtml(mod.title)}</span>` +
+        `<span class="lp-module-count">${mod.concepts ? mod.concepts.length : 0} concepts</span>` +
+        `</div>` +
+        `<div class="lp-concepts" id="lp-concepts-${mi}" hidden>`;
+
+      if (mod.concepts) {
+        mod.concepts.forEach((c) => {
+          html +=
+            `<div class="lp-concept">` +
+            `<span class="lp-concept-title">${escapeHtml(c.title)}</span>` +
+            `<span class="lp-concept-desc">${escapeHtml(c.description || "")}</span>` +
+            `<button class="btn btn-sm lp-teach-btn" data-project="${activeProject.id}" data-concept="${escapeHtml(c.title)}">Teach Me</button>` +
+            `</div>`;
+        });
+      }
+      html += `</div></div>`;
+    });
+
+    container.innerHTML = html;
+
+    // Toggle module expand/collapse
+    container.querySelectorAll(".lp-module-header").forEach((header) => {
+      header.addEventListener("click", () => {
+        const mi = header.dataset.module;
+        const concepts = document.getElementById(`lp-concepts-${mi}`);
+        const toggle = header.querySelector(".lp-module-toggle");
+        if (concepts.hidden) {
+          concepts.hidden = false;
+          toggle.textContent = "▼";
+        } else {
+          concepts.hidden = true;
+          toggle.textContent = "▶";
+        }
+      });
+    });
+
+    // Teach Me buttons
+    container.querySelectorAll(".lp-teach-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const projectId = btn.dataset.project;
+        const concept = btn.dataset.concept;
+        window.location.href = `/workspace/${projectId}?concept=${encodeURIComponent(concept)}`;
+      });
+    });
+  } catch (err) {
+    console.error("Failed to load learning path:", err);
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Init
 // ---------------------------------------------------------------------------
 document.addEventListener("DOMContentLoaded", () => {
   loadStats();
   loadProjects();
+  loadLearningPath();
   loadProgress();
   setupNewProject();
   setupSessionButtons();

@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
   Editor.init();
   FileTree.init(projectId);
   Chat.init(projectId, mode);
+  LearningPath.init(projectId);
   Voice.init();
 
   // Refresh file tree periodically (every 30s) in case files change externally

@@ -86,6 +86,43 @@ async def create_project(data: ProjectCreate, db: AsyncSession = Depends(get_db)
     db.add(project)
     await db.flush()
     await db.refresh(project)
+
+    # Fire-and-forget: generate personalized learning path
+    try:
+        from app.models.user_profile import UserProfile
+        from app.services.learning_path import generate_learning_path
+
+        profile_result = await db.execute(select(UserProfile).limit(1))
+        profile = profile_result.scalars().first()
+        profile_dict = None
+        if profile:
+            project.user_profile_id = profile.id
+            profile_dict = {
+                "python_level": profile.python_level,
+                "javascript_level": profile.javascript_level,
+                "html_css_level": profile.html_css_level,
+                "database_level": profile.database_level,
+                "git_level": profile.git_level,
+                "preferred_backend": profile.preferred_backend,
+                "preferred_frontend": profile.preferred_frontend,
+                "preferred_database": profile.preferred_database,
+                "learning_goal": profile.learning_goal,
+                "time_per_week": profile.time_per_week,
+            }
+        import json
+
+        path = await generate_learning_path(
+            project_name=project.name,
+            project_description=project.description,
+            tech_stack=project.tech_stack,
+            user_profile=profile_dict,
+        )
+        project.learning_path = json.dumps(path)
+        await db.flush()
+        await db.refresh(project)
+    except Exception:
+        pass  # Path generation is best-effort, project still works without it
+
     return ProjectResponse.model_validate(project)
 
 

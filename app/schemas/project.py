@@ -24,6 +24,7 @@ class ProjectResponse(BaseModel):
     tech_stack: str | None = None
     directory: str
     status: str
+    learning_path: str | None = None
     created_at: datetime
     updated_at: datetime
 
