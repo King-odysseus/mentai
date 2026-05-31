@@ -1,6 +1,7 @@
 /**
  * Workspace — orchestrates the three-panel learning environment.
  * Initializes all modules: FileTree, Editor, Chat, Voice.
+ * Handles editor collapse/expand and theme sync.
  */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -32,4 +33,30 @@ document.addEventListener("DOMContentLoaded", () => {
       e.returnValue = "";
     }
   });
+
+  // --------------------------------------------------------------------------
+  // Editor Collapse/Expand — toggle center panel visibility
+  // --------------------------------------------------------------------------
+  const collapseBtn = document.getElementById("btn-collapse-editor");
+  const editorHeader = document.getElementById("editor-header");
+  if (collapseBtn) {
+    let collapsed = false;
+
+    collapseBtn.addEventListener("click", () => {
+      collapsed = !collapsed;
+      workspace.classList.toggle("editor-collapsed", collapsed);
+      collapseBtn.textContent = collapsed ? "◀" : "▶";
+      collapseBtn.title = collapsed ? "Expand editor" : "Collapse editor";
+
+      // When collapsed, prevent the editor from retaining keyboard focus
+      if (collapsed) {
+        document.getElementById("chat-input")?.focus();
+      }
+
+      // Redraw CodeMirror after transition
+      setTimeout(() => {
+        window.dispatchEvent(new Event("resize"));
+      }, 300);
+    });
+  }
 });

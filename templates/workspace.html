@@ -30,14 +30,15 @@
   </aside>
 
   <!-- Center: Code Editor + Output -->
-  <section class="panel panel-center">
-    <div class="panel-header">
+  <section class="panel panel-center" id="panel-center">
+    <div class="panel-header" id="editor-header">
       <h3 id="editor-title">📝 Select a file</h3>
       <div class="editor-actions">
         <button class="btn btn-sm btn-primary" id="btn-save-file">💾 Save</button>
         <button class="btn btn-sm" id="btn-run-file">▶ Run</button>
         <button class="btn btn-sm" id="btn-preview-file">🌐 Preview</button>
         <button class="btn btn-sm" id="btn-review-file">🔍 Review</button>
+        <button class="btn-icon" id="btn-collapse-editor" title="Collapse editor">▶</button>
       </div>
     </div>
     <div class="panel-body editor-body" id="editor-container">

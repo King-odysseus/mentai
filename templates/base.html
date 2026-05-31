@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark" id="html-root">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,6 +13,7 @@
     <div class="topnav-links">
       <a href="/" class="topnav-link">Dashboard</a>
       <a href="/api/health" class="topnav-link" target="_blank">API Health</a>
+      <button class="topnav-link" id="btn-theme-toggle" title="Toggle theme">🌙</button>
     </div>
   </nav>
 
@@ -20,6 +21,25 @@
     {% block content %}{% endblock %}
   </main>
 
+  <script>
+  // Theme toggle — persists to localStorage
+  document.addEventListener("DOMContentLoaded", () => {
+    const root = document.getElementById("html-root");
+    const saved = localStorage.getItem("mentai_theme");
+    if (saved) root.dataset.theme = saved;
+
+    const btn = document.getElementById("btn-theme-toggle");
+    if (btn) {
+      btn.textContent = root.dataset.theme === "dark" ? "🌙" : "☀️";
+      btn.addEventListener("click", () => {
+        const next = root.dataset.theme === "dark" ? "light" : "dark";
+        root.dataset.theme = next;
+        btn.textContent = next === "dark" ? "🌙" : "☀️";
+        localStorage.setItem("mentai_theme", next);
+      });
+    }
+  });
+  </script>
   {% block extra_js %}{% endblock %}
 </body>
 </html>

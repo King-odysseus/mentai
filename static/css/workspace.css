@@ -7,6 +7,14 @@
   grid-template-columns: 220px 1fr 340px;
   height: calc(100vh - 60px);
   overflow: hidden;
+  transition: grid-template-columns var(--transition);
+}
+.workspace.editor-collapsed {
+  grid-template-columns: 220px 0fr 1fr;
+}
+.workspace.editor-collapsed .panel-center {
+  min-width: 0;
+  overflow: hidden;
 }
 
 /* Panels */

@@ -1,10 +1,11 @@
 /* ==========================================================================
    MentAi — Glassmorphism Design System
    Frosted glass surfaces on a deep gradient background.
+   Light mode via [data-theme="light"].
    ========================================================================== */
 
 :root {
-  /* Glass palette */
+  /* Glass palette — dark mode (default) */
   --glass-bg-start: #0f0c29;
   --glass-bg-mid: #302b63;
   --glass-bg-end: #24243e;
@@ -66,6 +67,34 @@
   --transition: 250ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Light mode — soft frosted glass on warm gradient */
+[data-theme="light"] {
+  --glass-bg-start: #f5f3ff;
+  --glass-bg-mid: #ede9fe;
+  --glass-bg-end: #eef2ff;
+
+  --glass-surface: rgba(255, 255, 255, 0.5);
+  --glass-surface-hover: rgba(255, 255, 255, 0.7);
+  --glass-surface-active: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-border-hover: rgba(0, 0, 0, 0.14);
+
+  --glass-text: #1a1d23;
+  --glass-text-secondary: rgba(0, 0, 0, 0.45);
+  --glass-text-muted: rgba(0, 0, 0, 0.3);
+
+  --glass-primary: #7c3aed;
+  --glass-primary-bg: rgba(124, 58, 237, 0.08);
+  --glass-accent: #059669;
+  --glass-success: #059669;
+  --glass-warning: #d97706;
+  --glass-danger: #dc2626;
+
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.08);
+  --shadow-glass-lg: 0 16px 48px rgba(0, 0, 0, 0.12);
+  --shadow-glass-xl: 0 24px 64px rgba(0, 0, 0, 0.16);
+  --shadow-glass-glow: 0 0 20px rgba(124, 58, 237, 0.1);
+}
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 16px; -webkit-text-size-adjust: 100%; }
 
