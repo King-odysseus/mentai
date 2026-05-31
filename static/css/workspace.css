@@ -4,17 +4,21 @@
 
 .workspace {
   display: grid;
-  grid-template-columns: 220px 1fr 340px;
+  grid-template-columns: 220px 1fr 4px 340px;
   height: calc(100vh - 60px);
   overflow: hidden;
-  transition: grid-template-columns var(--transition);
+  transition: grid-template-columns 250ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 .workspace.editor-collapsed {
-  grid-template-columns: 220px 0fr 1fr;
+  grid-template-columns: 220px 0fr 0px 1fr;
 }
 .workspace.editor-collapsed .panel-center {
   min-width: 0;
   overflow: hidden;
+}
+.workspace.editor-collapsed .panel-resize-handle {
+  cursor: default;
+  width: 0;
 }
 
 /* Panels */
@@ -27,7 +31,22 @@
   overflow: hidden;
   border-right: 1px solid var(--glass-border);
 }
-.panel-right { border-right: none; border-left: 1px solid var(--glass-border); }
+.panel-right { border-right: none; }
+
+/* Vertical resize handle between editor and chat */
+.panel-resize-handle {
+  width: 4px;
+  cursor: col-resize;
+  background: transparent;
+  transition: background var(--transition);
+  z-index: 5;
+  flex-shrink: 0;
+}
+.panel-resize-handle:hover,
+.panel-resize-handle.active {
+  background: var(--glass-primary);
+  box-shadow: 0 0 8px rgba(167,139,250,0.2);
+}
 
 .panel-header {
   display: flex;

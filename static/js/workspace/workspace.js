@@ -1,7 +1,6 @@
 /**
  * Workspace — orchestrates the three-panel learning environment.
- * Initializes all modules: FileTree, Editor, Chat, Voice.
- * Handles editor collapse/expand and theme sync.
+ * Handles editor collapse/expand and panel resizing.
  */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -11,21 +10,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const projectId = parseInt(workspace.dataset.projectId, 10);
   if (!projectId) return;
 
-  // Parse URL params for session mode
   const params = new URLSearchParams(window.location.search);
   const mode = params.get("mode") || "micro";
 
-  // Initialize modules
   Editor.init();
   FileTree.init(projectId);
   Chat.init(projectId, mode);
   LearningPath.init(projectId);
   Voice.init();
 
-  // Refresh file tree periodically (every 30s) in case files change externally
   setInterval(() => FileTree.refresh(), 30_000);
 
-  // Warn before leaving if there are unsaved changes
   window.addEventListener("beforeunload", (e) => {
     const title = document.getElementById("editor-title");
     if (title?.textContent?.startsWith("●")) {
@@ -35,28 +30,58 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // --------------------------------------------------------------------------
-  // Editor Collapse/Expand — toggle center panel visibility
+  // Editor Toggle — collapse/expand center panel
   // --------------------------------------------------------------------------
-  const collapseBtn = document.getElementById("btn-collapse-editor");
-  const editorHeader = document.getElementById("editor-header");
-  if (collapseBtn) {
-    let collapsed = false;
+  const toggleBtn = document.getElementById("btn-toggle-editor");
+  if (toggleBtn) {
+    toggleBtn.addEventListener("click", () => {
+      const collapsed = workspace.classList.toggle("editor-collapsed");
+      toggleBtn.textContent = collapsed ? "▶" : "◀";
+      toggleBtn.title = collapsed ? "Show editor" : "Hide editor";
 
-    collapseBtn.addEventListener("click", () => {
-      collapsed = !collapsed;
-      workspace.classList.toggle("editor-collapsed", collapsed);
-      collapseBtn.textContent = collapsed ? "◀" : "▶";
-      collapseBtn.title = collapsed ? "Expand editor" : "Collapse editor";
-
-      // When collapsed, prevent the editor from retaining keyboard focus
       if (collapsed) {
         document.getElementById("chat-input")?.focus();
       }
+      setTimeout(() => window.dispatchEvent(new Event("resize")), 300);
+    });
+  }
 
-      // Redraw CodeMirror after transition
-      setTimeout(() => {
-        window.dispatchEvent(new Event("resize"));
-      }, 300);
+  // --------------------------------------------------------------------------
+  // Panel Resize — drag divider between editor and chat
+  // --------------------------------------------------------------------------
+  const handle = document.getElementById("panel-resize-handle");
+  if (handle) {
+    let isDragging = false;
+
+    handle.addEventListener("mousedown", (e) => {
+      isDragging = true;
+      handle.classList.add("active");
+      document.body.style.cursor = "col-resize";
+      document.body.style.userSelect = "none";
+      e.preventDefault();
+    });
+
+    document.addEventListener("mousemove", (e) => {
+      if (!isDragging) return;
+      const rect = workspace.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const leftWidth = 220; // file tree pixel width
+      const rightPanelMin = 280;
+      const editorMin = 200;
+      const available = rect.width - leftWidth - rightPanelMin - 4; // 4px for handle
+      const editorPx = Math.max(editorMin, Math.min(mouseX - leftWidth, available));
+      const chatPx = available - editorPx + rightPanelMin;
+
+      // Set the handle's position explicitly
+      workspace.style.gridTemplateColumns = `${leftWidth}px ${editorPx}px 4px ${chatPx}px`;
+    });
+
+    document.addEventListener("mouseup", () => {
+      if (!isDragging) return;
+      isDragging = false;
+      handle.classList.remove("active");
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
     });
   }
 });

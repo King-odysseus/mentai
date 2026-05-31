@@ -38,7 +38,6 @@
         <button class="btn btn-sm" id="btn-run-file">▶ Run</button>
         <button class="btn btn-sm" id="btn-preview-file">🌐 Preview</button>
         <button class="btn btn-sm" id="btn-review-file">🔍 Review</button>
-        <button class="btn-icon" id="btn-collapse-editor" title="Collapse editor">▶</button>
       </div>
     </div>
     <div class="panel-body editor-body" id="editor-container">
@@ -59,11 +58,15 @@
     </div>
   </section>
 
+  <!-- Vertical resize handle between editor and chat -->
+  <div class="panel-resize-handle" id="panel-resize-handle"></div>
+
   <!-- Right: AI Tutor Chat -->
   <aside class="panel panel-right" id="chat-panel">
     <div class="panel-header">
       <h3>🤖 <span id="chat-tutor-name">Mentor</span></h3>
       <div class="chat-controls">
+        <button class="btn-icon" id="btn-toggle-editor" title="Hide editor">◀</button>
         <button class="btn-icon" id="btn-toggle-voice" title="Toggle voice tutor">
           🔊
         </button>
