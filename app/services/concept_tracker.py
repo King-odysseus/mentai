@@ -81,6 +81,28 @@ async def record_concept_exposure(
         logger.debug("New concept exposure: concept=%d", concept_id)
 
     await db.flush()
+
+    # Fire-and-forget: notify Cognitive1 brain
+    try:
+        from app.services.cognitive1 import cognitive1
+        from app.models.project import LearningProject
+
+        concept_result = await db.execute(
+            select(Concept.title).where(Concept.id == concept_id)
+        )
+        concept_title = concept_result.scalar() or "unknown"
+        proj_result = await db.execute(
+            select(LearningProject.name).where(LearningProject.id == project_id)
+        )
+        proj_name = proj_result.scalar() or "unknown"
+        await cognitive1.learn_concept_exposed(
+            concept_title=concept_title,
+            mastery=exposure.mastery,
+            project_name=proj_name,
+        )
+    except Exception:
+        pass  # Cognitive1 is optional
+
     return exposure
 
 

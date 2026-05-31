@@ -178,6 +178,109 @@ function escapeHtml(str) {
 document.addEventListener("DOMContentLoaded", () => {
   loadStats();
   loadProjects();
+  loadProgress();
   setupNewProject();
   setupSessionButtons();
 });
+
+// ---------------------------------------------------------------------------
+// Progress charts
+// ---------------------------------------------------------------------------
+async function loadProgress() {
+  try {
+    const data = await API.get("/api/dashboard/progress");
+    renderSessionChart(data.daily_sessions);
+    renderMasteryChart(data.mastery_distribution);
+    renderRecentlyMastered(data.recently_mastered);
+  } catch (err) {
+    console.error("Failed to load progress:", err);
+  }
+}
+
+function renderSessionChart(dailySessions) {
+  const container = document.getElementById("session-chart");
+  if (!dailySessions.length) {
+    container.innerHTML =
+      '<p class="empty-state">No sessions in the last 14 days. Start a session to see your activity!</p>';
+    return;
+  }
+  const maxMinutes = Math.max(...dailySessions.map((d) => d.minutes), 1);
+  const maxHeight = 120;
+  container.innerHTML = dailySessions
+    .map((d) => {
+      const height = Math.max((d.minutes / maxMinutes) * maxHeight, 4);
+      const dateLabel = d.date.slice(5); // MM-DD
+      return (
+        `<div class="chart-bar-wrapper">` +
+        `<div class="chart-bar" style="height:${height}px" title="${d.minutes}min">` +
+        `<span class="chart-bar-label">${d.minutes}m</span>` +
+        `</div>` +
+        `<span class="chart-date">${dateLabel}</span>` +
+        `</div>`
+      );
+    })
+    .join("");
+}
+
+function renderMasteryChart(distribution) {
+  const container = document.getElementById("mastery-chart");
+  const total =
+    Object.values(distribution).reduce((a, b) => a + b, 0) || 1;
+  const levels = ["introduced", "practiced", "confident", "mastered"];
+  const colors = {
+    introduced: "#f0c040",
+    practiced: "#54aeff",
+    confident: "#4ac26b",
+    mastered: "#8250df",
+  };
+
+  // SVG donut chart
+  const mastered = distribution.mastered || 0;
+  let svg =
+    '<svg viewBox="0 0 120 120" width="120" height="120">';
+  let offset = 0;
+  const circumference = 2 * Math.PI * 40;
+  levels.forEach((level) => {
+    const count = distribution[level] || 0;
+    const pct = count / total;
+    const dash = pct * circumference;
+    svg +=
+      `<circle cx="60" cy="60" r="40" fill="none" stroke="${colors[level]}" ` +
+      `stroke-width="12" stroke-dasharray="${dash} ${circumference - dash}" ` +
+      `stroke-dashoffset="${-offset}" transform="rotate(-90 60 60)"/>`;
+    offset += dash;
+  });
+  svg +=
+    '<text x="60" y="55" text-anchor="middle" font-size="16" font-weight="700" fill="#24292e">' +
+    mastered +
+    "</text>" +
+    '<text x="60" y="72" text-anchor="middle" font-size="10" fill="#6a737d">mastered</text></svg>';
+
+  const legend = levels
+    .map(
+      (l) =>
+        `<div class="legend-item">` +
+        `<span class="legend-dot" style="background:${colors[l]}"></span>${l}: ${distribution[l] || 0}` +
+        `</div>`
+    )
+    .join("");
+
+  container.innerHTML =
+    `<div class="mastery-chart-row">${svg}<div class="mastery-legend">${legend}</div></div>`;
+}
+
+function renderRecentlyMastered(concepts) {
+  const container = document.getElementById("recently-mastered");
+  if (!concepts.length) return;
+  container.innerHTML =
+    `<h4 style="margin-bottom:var(--space-xs)">Recently Mastered</h4>` +
+    concepts
+      .map(
+        (c) =>
+          `<div class="mastered-item">` +
+          `<span>${escapeHtml(c.concept)}</span>` +
+          `<span class="mastered-count">${c.encounter_count}x</span>` +
+          `</div>`
+      )
+      .join("");
+}

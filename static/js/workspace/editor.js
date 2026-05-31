@@ -48,6 +48,9 @@ const Editor = {
     // Run button
     document.getElementById("btn-run-file").addEventListener("click", () => this.run());
 
+    // Review button
+    document.getElementById("btn-review-file").addEventListener("click", () => this.review());
+
     // Keyboard shortcuts
     document.addEventListener("keydown", (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "s") {
@@ -132,6 +135,20 @@ const Editor = {
     } catch (err) {
       alert("Failed to save: " + err.message);
     }
+  },
+
+  /**
+   * Request a code review from the AI tutor.
+   */
+  review() {
+    if (!this.currentPath || !this.view) return;
+    const code = this.view.state.doc.toString();
+    const focus = prompt("Review focus? (general / security / style / architecture)", "general");
+    document.dispatchEvent(
+      new CustomEvent("code-review-requested", {
+        detail: { code, file_path: this.currentPath, focus: focus || "general" },
+      })
+    );
   },
 
   /**

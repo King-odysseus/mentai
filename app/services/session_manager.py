@@ -74,6 +74,30 @@ async def end_session(
         "Session ended: id=%d, duration=%dmin, mood=%s",
         session.id, session.duration_minutes, session.mood,
     )
+
+    # Fire-and-forget: notify Cognitive1 brain
+    try:
+        from app.services.cognitive1 import cognitive1
+        from app.models.project import LearningProject
+
+        proj_result = await db.execute(
+            select(LearningProject.name).where(LearningProject.id == session.project_id)
+        )
+        proj_name = proj_result.scalar() or "unknown"
+        concept_count = (
+            len(session.concepts_covered.split(","))
+            if session.concepts_covered
+            else 0
+        )
+        await cognitive1.log_session(
+            project_name=proj_name,
+            mode=session.mode,
+            duration_minutes=session.duration_minutes or 0,
+            concepts_covered=concept_count,
+        )
+    except Exception:
+        pass  # Cognitive1 is optional
+
     return session
 
 

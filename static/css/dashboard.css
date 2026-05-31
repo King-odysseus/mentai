@@ -186,3 +186,140 @@ dialog h2 { margin-bottom: var(--space-lg); }
   .stats-row { grid-template-columns: repeat(2, 1fr); }
   .dash-grid { grid-template-columns: 1fr; }
 }
+
+/* ==========================================================================
+   Session chart (CSS bar chart)
+   ========================================================================== */
+.chart-container {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-sm);
+  height: 160px;
+  padding: var(--space-sm) 0;
+}
+.chart-bar-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  min-width: 20px;
+}
+.chart-bar {
+  width: 100%;
+  max-width: 28px;
+  background: var(--color-primary);
+  border-radius: 4px 4px 0 0;
+  transition: height var(--transition-base);
+  position: relative;
+}
+.chart-bar-label {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.65rem;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+.chart-date {
+  font-size: 0.6rem;
+  color: var(--color-text-secondary);
+  margin-top: 4px;
+}
+
+/* Mastery donut chart */
+.mastery-chart-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+}
+.mastery-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: var(--font-size-sm);
+  text-transform: capitalize;
+}
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* Recently mastered */
+.mastered-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  font-size: var(--font-size-sm);
+  border-bottom: 1px solid var(--color-border);
+}
+.mastered-item:last-child { border-bottom: 0; }
+.mastered-count {
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   Goals
+   ========================================================================== */
+.goal-list { display: flex; flex-direction: column; gap: var(--space-sm); }
+.goal-item {
+  padding: var(--space-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+.goal-completed { opacity: 0.6; }
+.goal-suggestion { border-style: dashed; cursor: pointer; }
+.goal-suggestion:hover { border-color: var(--color-primary); }
+.goal-desc { font-weight: 500; margin-bottom: 4px; }
+.goal-bar-bg {
+  height: 6px;
+  background: var(--color-bg);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.goal-bar-fill {
+  height: 100%;
+  background: var(--color-success);
+  border-radius: 3px;
+  transition: width var(--transition-base);
+}
+.goal-meta {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-top: 2px;
+}
+
+/* ==========================================================================
+   Pattern Library
+   ========================================================================== */
+.pattern-list { display: flex; flex-direction: column; gap: var(--space-sm); }
+.pattern-group { margin-bottom: var(--space-xs); }
+.pattern-category {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-accent);
+  text-transform: capitalize;
+  margin-bottom: 4px;
+}
+.pattern-item {
+  padding: var(--space-xs) var(--space-sm);
+  border-left: 2px solid var(--color-border);
+  margin-left: var(--space-sm);
+  margin-bottom: 2px;
+}
+.pattern-name {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+}
+.pattern-meta {
+  font-size: 0.7rem;
+  color: var(--color-text-secondary);
+}

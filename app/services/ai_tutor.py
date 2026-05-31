@@ -40,6 +40,7 @@ class AITutor:
         curriculum_context: list[dict] | None = None,
         mastery_context: list[dict] | None = None,
         session_mode: str = "micro",
+        user_message: str | None = None,
     ) -> str:
         """Build the system prompt with all available context layers."""
 
@@ -57,6 +58,19 @@ class AITutor:
                 "The learner has 30+ minutes for a deep session. Take time to explain concepts "
                 "thoroughly. Use realistic code examples. Encourage building and experimentation. "
                 "Ask probing questions to deepen understanding."
+            )
+
+        # Code review mode — add structured review instructions
+        if user_message and "Please review the following code" in user_message:
+            parts.append(
+                "\n## Code Review Mode\n"
+                "You are reviewing the learner's code. Structure your review as:\n"
+                "1. **What's Good** — highlight what they did well (be specific)\n"
+                "2. **Suggestions** — actionable improvements tied to roadmap concepts\n"
+                "3. **Patterns Spotted** — name any design patterns or idioms you see\n"
+                "4. **Next Step** — a small challenge or refactor to try\n\n"
+                "Be encouraging. This is a teaching moment, not a grading exercise. "
+                "Connect your feedback to the curriculum concepts they are learning."
             )
 
         # Current project context
@@ -121,6 +135,7 @@ class AITutor:
             curriculum_context=curriculum_context,
             mastery_context=mastery_context,
             session_mode=session_mode,
+            user_message=user_message,
         )
 
         messages = [{"role": "system", "content": system_prompt}]

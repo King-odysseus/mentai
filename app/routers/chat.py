@@ -147,6 +147,21 @@ async def tutor_chat(websocket: WebSocket, project_id: int):
                 # Signal completion
                 await websocket.send_json({"type": "done"})
 
+                # Fire-and-forget: log estimated cost to Cognitive1
+                try:
+                    from app.services.cognitive1 import cognitive1
+
+                    estimated_input = len(content) // 4
+                    estimated_output = len(full_response) // 4
+                    await cognitive1.log_cost(
+                        model=settings.deepseek_model,
+                        input_tokens=estimated_input,
+                        output_tokens=estimated_output,
+                        operation="tutor_chat",
+                    )
+                except Exception:
+                    pass
+
                 # Try to detect which concepts were covered and record them
                 if mastery_context and curriculum_context:
                     try:
@@ -170,6 +185,86 @@ async def tutor_chat(websocket: WebSocket, project_id: int):
                             await db.commit()
                     except Exception:
                         pass  # Concept extraction is best-effort
+
+            # ------------------------------------------------------------------
+            # Code review — tutor reviews the learner's code
+            # ------------------------------------------------------------------
+            elif msg_type == "code_review":
+                code = data.get("code", "")
+                file_path = data.get("file_path", "unknown")
+                focus = data.get("focus", "general")
+
+                if not code:
+                    await websocket.send_json({"type": "error", "content": "No code provided for review."})
+                    continue
+
+                session_mode = data.get("session_mode", session_mode)
+
+                from app.storage.db import async_session
+                from app.services.ai_tutor import ai_tutor
+                from app.models.project import LearningProject
+                from sqlalchemy import select
+
+                project_context = None
+                curriculum_context = None
+                mastery_context = None
+
+                async with async_session() as db:
+                    proj_result = await db.execute(
+                        select(LearningProject).where(LearningProject.id == project_id)
+                    )
+                    project = proj_result.scalars().first()
+                    if project:
+                        project_context = {
+                            "name": project.name,
+                            "tech_stack": project.tech_stack,
+                            "description": project.description,
+                        }
+
+                    from app.services import curriculum as cur
+                    from app.services import concept_tracker as ct
+                    curriculum_context = await cur.get_next_concepts(db, project_id, limit=5)
+                    mastery_context = await ct.get_mastery_for_project(db, project_id)
+
+                review_prompt = (
+                    f"Please review the following code from `{file_path}`. "
+                    f"Focus on: {focus}.\n\n"
+                    f"Consider the learner's current curriculum position and concept mastery. "
+                    f"Point out what they did well, what could be improved, and connect "
+                    f"their code to the roadmap concepts they are learning.\n\n"
+                    f"```\n{code}\n```"
+                )
+
+                history.append({"role": "user", "content": review_prompt})
+                full_response = ""
+
+                async for delta in ai_tutor.stream_response(
+                    user_message=review_prompt,
+                    conversation_history=history,
+                    project_context=project_context,
+                    curriculum_context=curriculum_context,
+                    mastery_context=mastery_context,
+                    session_mode=session_mode,
+                ):
+                    full_response += delta
+                    await websocket.send_json({"type": "delta", "content": delta})
+
+                history.append({"role": "assistant", "content": full_response})
+                await websocket.send_json({"type": "done"})
+
+                # Fire-and-forget: log estimated cost
+                try:
+                    from app.services.cognitive1 import cognitive1
+                    estimated_input = len(review_prompt) // 4
+                    estimated_output = len(full_response) // 4
+                    await cognitive1.log_cost(
+                        model=settings.deepseek_model,
+                        input_tokens=estimated_input,
+                        output_tokens=estimated_output,
+                        operation="code_review",
+                    )
+                except Exception:
+                    pass
 
     except WebSocketDisconnect:
         logger.info("Chat WebSocket disconnected for project %d", project_id)

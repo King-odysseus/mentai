@@ -20,7 +20,7 @@ from app.config import settings
 # ---------------------------------------------------------------------------
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Startup: create tables, ensure workspace exists. Shutdown: clean up."""
+    """Startup: create tables, ensure workspace exists, seed curriculum and projects."""
     # Ensure data and workspace directories exist
     data_dir = settings.project_root / "data"
     data_dir.mkdir(exist_ok=True)
@@ -28,8 +28,17 @@ async def lifespan(app: FastAPI):
     (settings.workspace_dir / ".gitkeep").touch(exist_ok=True)
 
     # Import here to avoid circular imports
-    from app.storage.db import create_tables
+    from app.storage.db import create_tables, async_session
     await create_tables()
+
+    # Seed curriculum and scaffolded projects (idempotent)
+    from app.services import curriculum as curriculum_service
+    from app.services.project_generator import seed_curriculum_projects
+
+    async with async_session() as db:
+        await curriculum_service.seed_curriculum(db)
+        await seed_curriculum_projects(db)
+        await db.commit()
 
     yield
 
@@ -73,12 +82,14 @@ async def workspace(request: Request, project_id: int):
 # ---------------------------------------------------------------------------
 # API routers — registered after page routes
 # ---------------------------------------------------------------------------
-from app.routers import projects, concepts, curriculum, dashboard as dash_api
+from app.routers import projects, concepts, curriculum, dashboard as dash_api, patterns, goals
 
 app.include_router(dash_api.router, prefix="/api", tags=["dashboard"])
 app.include_router(projects.router, prefix="/api/projects", tags=["projects"])
 app.include_router(concepts.router, prefix="/api/concepts", tags=["concepts"])
 app.include_router(curriculum.router, prefix="/api/curriculum", tags=["curriculum"])
+app.include_router(patterns.router, prefix="/api/patterns", tags=["patterns"])
+app.include_router(goals.router, prefix="/api/goals", tags=["goals"])
 
 
 # ---------------------------------------------------------------------------

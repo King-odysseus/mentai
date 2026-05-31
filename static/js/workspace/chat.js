@@ -191,6 +191,17 @@ const Chat = {
     const sendBtn = document.getElementById("btn-send");
     const modeSelect = document.getElementById("session-mode");
 
+    // Listen for code review requests from the editor
+    document.addEventListener("code-review-requested", (e) => {
+      this.send({
+        type: "code_review",
+        code: e.detail.code,
+        file_path: e.detail.file_path,
+        focus: e.detail.focus,
+        session_mode: this.sessionMode,
+      });
+    });
+
     // Send button
     sendBtn.addEventListener("click", () => {
       this.sendMessage(input.value);

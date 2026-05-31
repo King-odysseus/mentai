@@ -76,6 +76,44 @@
         <p class="empty-state">Start a project and your concept progress will appear here.</p>
       </div>
     </div>
+
+    <!-- Today's Goals -->
+    <div class="dash-card">
+      <div class="card-header">
+        <h2>Today's Goals</h2>
+        <button class="btn btn-sm" id="btn-add-goal">+ Goal</button>
+      </div>
+      <div class="goal-list" id="goal-list">
+        <p class="empty-state">Loading goals...</p>
+      </div>
+    </div>
+
+    <!-- Pattern Library -->
+    <div class="dash-card">
+      <div class="card-header">
+        <h2>Pattern Library</h2>
+      </div>
+      <div class="pattern-list" id="pattern-list">
+        <p class="empty-state">Patterns you discover will appear here.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Progress charts row -->
+  <section class="dash-grid" style="margin-top:var(--space-lg)">
+    <div class="dash-card">
+      <div class="card-header"><h2>Session History (14 days)</h2></div>
+      <div class="chart-container" id="session-chart">
+        <p class="empty-state">Loading...</p>
+      </div>
+    </div>
+    <div class="dash-card">
+      <div class="card-header"><h2>Concept Mastery</h2></div>
+      <div id="mastery-chart">
+        <p class="empty-state">Loading...</p>
+      </div>
+      <div id="recently-mastered" style="margin-top:var(--space-md)"></div>
+    </div>
   </section>
 </div>
 
@@ -105,4 +143,6 @@
 
 {% block extra_js %}
 <script src="/static/js/dashboard/dashboard.js"></script>
+<script src="/static/js/dashboard/goals.js"></script>
+<script src="/static/js/dashboard/patterns.js"></script>
 {% endblock %}
