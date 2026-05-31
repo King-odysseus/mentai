@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.storage.db import get_db
 from app.models.user_profile import UserProfile
-from app.schemas.profile import ProfileCreate, ProfileUpdate, ProfileResponse
+from app.schemas.profile import ProfileCreate, ProfileUpdate, NameUpdate, ProfileResponse
 
 router = APIRouter()
 
@@ -54,3 +54,15 @@ async def update_profile(data: ProfileUpdate, db: AsyncSession = Depends(get_db)
     await db.flush()
     await db.refresh(profile)
     return ProfileResponse.model_validate(profile)
+
+
+@router.put("/name")
+async def update_name(data: NameUpdate, db: AsyncSession = Depends(get_db)):
+    """Update just the display name."""
+    result = await db.execute(select(UserProfile).limit(1))
+    profile = result.scalars().first()
+    if not profile:
+        raise HTTPException(status_code=404, detail="No profile found.")
+    profile.display_name = data.name
+    await db.flush()
+    return {"name": data.name}

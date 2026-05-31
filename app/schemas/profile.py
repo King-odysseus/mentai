@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 
 class ProfileCreate(BaseModel):
+    display_name: str = "Learner"
     python_level: str = "beginner"
     javascript_level: str = "beginner"
     html_css_level: str = "beginner"
@@ -19,6 +20,7 @@ class ProfileCreate(BaseModel):
 
 
 class ProfileUpdate(BaseModel):
+    display_name: str | None = None
     python_level: str | None = None
     javascript_level: str | None = None
     html_css_level: str | None = None
@@ -32,8 +34,13 @@ class ProfileUpdate(BaseModel):
     onboarding_complete: bool | None = None
 
 
+class NameUpdate(BaseModel):
+    name: str
+
+
 class ProfileResponse(BaseModel):
     id: int
+    display_name: str
     python_level: str
     javascript_level: str
     html_css_level: str

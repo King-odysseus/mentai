@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}MentAi — Onboarding{% endblock %}
+{% block title %}MentAi — Create Account{% endblock %}
 {% block extra_css %}
 <link rel="stylesheet" href="/static/css/onboarding.css">
 {% endblock %}
@@ -7,36 +7,113 @@
 {% block content %}
 <div class="onboarding">
   <header class="onboarding-header">
-    <h1>Welcome, {{ learner_name }}</h1>
-    <p>Let's build your personalized learning path. Mentor will ask a few questions.</p>
+    <h1>Create Your MentAi Account</h1>
+    <p>Tell us about yourself and we'll build a personalized learning path.</p>
   </header>
 
-  <div class="onboarding-chat" id="onboarding-chat">
-    <div class="onboarding-messages" id="onboarding-messages">
-      <div class="onboarding-msg tutor">
-        <p>Connecting to Mentor...</p>
+  <form class="onboarding-form" id="onboarding-form">
+    <!-- Name -->
+    <div class="form-section">
+      <h3>What should we call you?</h3>
+      <div class="form-group">
+        <label for="reg-name">Your Name</label>
+        <input type="text" id="reg-name" name="name" required
+               placeholder="e.g. Alex" maxlength="100" autofocus>
       </div>
     </div>
 
-    <div class="onboarding-progress" id="onboarding-progress" hidden>
-      <div class="progress-bar-bg">
-        <div class="progress-bar-fill" id="progress-bar-fill" style="width:0%"></div>
+    <!-- Experience Levels -->
+    <div class="form-section">
+      <h3>Your Experience Level</h3>
+      <div class="exp-grid">
+        <div class="form-group">
+          <label for="reg-python">Python</label>
+          <select id="reg-python" name="python_level">
+            <option value="beginner">Beginner — just starting</option>
+            <option value="intermediate" selected>Intermediate — comfortable with functions and classes</option>
+            <option value="advanced">Advanced — built real projects, know async/await</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="reg-js">JavaScript</label>
+          <select id="reg-js" name="javascript_level">
+            <option value="beginner" selected>Beginner — basic syntax</option>
+            <option value="intermediate">Intermediate — DOM, events, fetch</option>
+            <option value="advanced">Advanced — SPAs, closures, promises</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="reg-html">HTML &amp; CSS</label>
+          <select id="reg-html" name="html_css_level">
+            <option value="beginner">Beginner — basic tags and selectors</option>
+            <option value="intermediate" selected>Intermediate — semantic HTML, flexbox/grid</option>
+            <option value="advanced">Advanced — accessibility, responsive, animations</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="reg-db">Databases</label>
+          <select id="reg-db" name="database_level">
+            <option value="beginner" selected>Beginner — know what SQL is</option>
+            <option value="intermediate">Intermediate — can write queries and joins</option>
+            <option value="advanced">Advanced — designed schemas, indexing</option>
+          </select>
+        </div>
       </div>
-      <span class="progress-text" id="progress-text">Step 0/8</span>
     </div>
 
-    <div class="onboarding-hint" id="onboarding-hint" hidden></div>
-
-    <div class="onboarding-input-area">
-      <input
-        type="text"
-        id="onboarding-input"
-        placeholder="Type your answer..."
-        autofocus
-      />
-      <button class="btn btn-primary" id="btn-onboarding-send">Send</button>
+    <!-- Tech Stack Preferences -->
+    <div class="form-section">
+      <h3>Your Preferred Stack</h3>
+      <div class="stack-grid">
+        <div class="form-group">
+          <label for="reg-backend">Backend</label>
+          <select id="reg-backend" name="preferred_backend">
+            <option value="python+fastapi">Python + FastAPI</option>
+            <option value="python+django">Python + Django</option>
+            <option value="python+flask">Python + Flask</option>
+            <option value="node+express">Node.js + Express</option>
+            <option value="other">Something else</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="reg-frontend">Frontend</label>
+          <select id="reg-frontend" name="preferred_frontend">
+            <option value="react">React</option>
+            <option value="vanilla">Vanilla HTML/CSS/JS (start simple)</option>
+            <option value="htmx">HTMX + templates</option>
+            <option value="vue">Vue</option>
+            <option value="other">Something else</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="reg-goal">Learning Goal</label>
+          <select id="reg-goal" name="learning_goal">
+            <option value="fullstack">Full-Stack Developer</option>
+            <option value="backend">Backend Specialist</option>
+            <option value="frontend">Frontend Specialist</option>
+            <option value="exploring">Just Exploring</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="reg-time">Time Per Week</label>
+          <select id="reg-time" name="time_per_week">
+            <option value="5h">~5 hours (casual)</option>
+            <option value="10h" selected>~10 hours (regular)</option>
+            <option value="20h">~20 hours (dedicated)</option>
+            <option value="30h">~30+ hours (intensive)</option>
+          </select>
+        </div>
+      </div>
     </div>
-  </div>
+
+    <!-- Submit -->
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary btn-lg" id="btn-create-account">
+        Create Account & Start Learning
+      </button>
+    </div>
+    <p class="form-footer">Your profile shapes your entire learning experience — you can update it anytime.</p>
+  </form>
 </div>
 {% endblock %}
 

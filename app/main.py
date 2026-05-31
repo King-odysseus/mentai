@@ -62,16 +62,16 @@ async def dashboard(request: Request):
 
     return templates.TemplateResponse(
         "dashboard.html",
-        {"request": request, "learner_name": settings.learner_name},
+        {"request": request, "learner_name": profile.display_name},
     )
 
 
 @app.get("/onboarding", response_class=HTMLResponse)
 async def onboarding(request: Request):
-    """Onboarding interview — AI asks questions to build learner profile."""
+    """Account creation — name, experience, stack preferences."""
     return templates.TemplateResponse(
         "onboarding.html",
-        {"request": request, "learner_name": settings.learner_name},
+        {"request": request},
     )
 
 

@@ -1,14 +1,11 @@
 /* ==========================================================================
-   Onboarding page styles
+   Onboarding — Account creation page
    ========================================================================== */
 
 .onboarding {
-  max-width: 600px;
+  max-width: 640px;
   margin: 0 auto;
   padding: var(--space-xl);
-  display: flex;
-  flex-direction: column;
-  min-height: calc(100vh - 48px);
 }
 
 .onboarding-header {
@@ -24,93 +21,69 @@
   margin-top: var(--space-xs);
 }
 
-.onboarding-chat {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+.onboarding-form {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  overflow: hidden;
+  padding: var(--space-xl);
 }
 
-.onboarding-messages {
-  flex: 1;
-  overflow-y: auto;
-  padding: var(--space-lg);
-  display: flex;
-  flex-direction: column;
+.form-section {
+  margin-bottom: var(--space-xl);
+  padding-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--color-border);
+}
+.form-section:last-of-type { border-bottom: none; }
+.form-section h3 {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  margin-bottom: var(--space-md);
+}
+
+.exp-grid, .stack-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: var(--space-md);
 }
 
-.onboarding-msg {
-  max-width: 85%;
-  padding: var(--space-sm) var(--space-md);
-  border-radius: var(--radius-md);
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.form-group label {
   font-size: var(--font-size-sm);
-  line-height: 1.6;
-}
-.onboarding-msg.tutor {
-  align-self: flex-start;
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-}
-.onboarding-msg.learner {
-  align-self: flex-end;
-  background: var(--color-primary);
-  color: #fff;
-}
-
-.onboarding-progress {
-  padding: var(--space-sm) var(--space-lg);
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-}
-.progress-bar-bg {
-  flex: 1;
-  height: 4px;
-  background: var(--color-border);
-  border-radius: 2px;
-  overflow: hidden;
-}
-.progress-bar-fill {
-  height: 100%;
-  background: var(--color-primary);
-  border-radius: 2px;
-  transition: width var(--transition-base);
-}
-.progress-text {
-  font-size: 0.75rem;
+  font-weight: 500;
   color: var(--color-text-secondary);
-  white-space: nowrap;
 }
-
-.onboarding-hint {
-  padding: var(--space-xs) var(--space-lg);
-  padding-bottom: 0;
-  font-size: 0.75rem;
-  color: var(--color-text-secondary);
-  font-style: italic;
-}
-
-.onboarding-input-area {
-  display: flex;
-  gap: var(--space-xs);
-  padding: var(--space-md);
-  border-top: 1px solid var(--color-border);
-  background: var(--color-bg);
-}
-.onboarding-input-area input {
-  flex: 1;
+.form-group input,
+.form-group select {
   padding: var(--space-sm) var(--space-md);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   font-size: var(--font-size-sm);
   font-family: var(--font-sans);
+  background: var(--color-surface);
 }
-.onboarding-input-area input:focus {
+.form-group input:focus,
+.form-group select:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 2px rgba(9, 105, 218, 0.15);
+}
+
+.form-actions {
+  text-align: center;
+  margin-top: var(--space-lg);
+}
+.btn-lg {
+  padding: var(--space-md) var(--space-xl);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+}
+.form-footer {
+  text-align: center;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-top: var(--space-md);
 }

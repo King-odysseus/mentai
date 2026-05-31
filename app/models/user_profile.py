@@ -18,6 +18,9 @@ class UserProfile(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
 
+    # Display name
+    display_name: Mapped[str] = mapped_column(String(100), default="Learner")
+
     # Experience levels: beginner | intermediate | advanced
     python_level: Mapped[str] = mapped_column(String(20), default="beginner")
     javascript_level: Mapped[str] = mapped_column(String(20), default="beginner")
