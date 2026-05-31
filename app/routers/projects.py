@@ -350,3 +350,19 @@ async def run_file(
         return {"output": "", "error": "Execution timed out (15 second limit).", "exit_code": -1}
     except FileNotFoundError:
         return {"output": "", "error": "Python3 not found. Is Python installed?", "exit_code": -1}
+
+
+# ---------------------------------------------------------------------------
+# Comparison endpoints (Phase 3)
+# ---------------------------------------------------------------------------
+@router.get("/compare/{id_a}/{id_b}")
+async def compare_projects(
+    id_a: int, id_b: int, db: AsyncSession = Depends(get_db)
+):
+    """Compare two projects side by side — file structure, concepts, patterns."""
+    from app.services.project_comparator import compare_projects as cp
+
+    try:
+        return await cp(db, id_a, id_b)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))

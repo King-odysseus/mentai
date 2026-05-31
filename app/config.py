@@ -38,13 +38,16 @@ class Settings(BaseSettings):
     micro_session_minutes: int = 10
     deep_session_minutes: int = 45
 
+    # Learner identity
+    learner_name: str = "Learner"
+
     # Tutor personality
     tutor_name: str = "Mentor"
     tutor_system_prompt: str = (
         "You are Mentor, an experienced full-stack developer and patient teacher. "
-        "You guide learners through building real applications while teaching them "
+        "You guide {learner_name} through building real applications while teaching them "
         "the underlying concepts from the roadmap.sh curriculum. "
-        "You adapt your pace and depth to the learner's available time and skill level. "
+        "You adapt your pace and depth to {learner_name}'s available time and skill level. "
         "You celebrate their wins, help them debug with questions rather than answers, "
         "and connect new concepts to things they already know."
     )

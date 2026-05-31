@@ -8,7 +8,7 @@
 <div class="dashboard">
   <!-- Header -->
   <header class="dash-header">
-    <h1>Welcome back, learner 👋</h1>
+    <h1>Welcome back, {{ learner_name }} 👋</h1>
     <p class="dash-subtitle">Your full-stack journey, one project at a time.</p>
   </header>
 
@@ -115,6 +115,19 @@
       <div id="recently-mastered" style="margin-top:var(--space-md)"></div>
     </div>
   </section>
+
+  <!-- Custom Roadmap -->
+  <section class="dash-grid" style="margin-top:var(--space-lg)">
+    <div class="dash-card" style="grid-column: 1 / -1;">
+      <div class="card-header">
+        <h2>Custom Roadmap</h2>
+        <button class="btn btn-sm btn-primary" id="btn-new-module">+ Module</button>
+      </div>
+      <div class="roadmap-list" id="roadmap-list">
+        <p class="empty-state">Loading curriculum...</p>
+      </div>
+    </div>
+  </section>
 </div>
 
 <!-- New Project Modal -->
@@ -139,10 +152,30 @@
     </div>
   </form>
 </dialog>
+
+<!-- Compare Projects Modal -->
+<dialog id="compare-modal">
+  <div class="compare-container">
+    <h2>Project Comparison</h2>
+    <div class="compare-tabs">
+      <button class="compare-tab active" data-tab="files">Files</button>
+      <button class="compare-tab" data-tab="concepts">Concepts</button>
+      <button class="compare-tab" data-tab="patterns">Patterns</button>
+    </div>
+    <div class="compare-body" id="compare-body">
+      <p class="empty-state">Select two projects to compare.</p>
+    </div>
+    <div class="form-actions">
+      <button type="button" class="btn btn-secondary" id="btn-close-compare">Close</button>
+    </div>
+  </div>
+</dialog>
 {% endblock %}
 
 {% block extra_js %}
 <script src="/static/js/dashboard/dashboard.js"></script>
 <script src="/static/js/dashboard/goals.js"></script>
 <script src="/static/js/dashboard/patterns.js"></script>
+<script src="/static/js/dashboard/compare.js"></script>
+<script src="/static/js/dashboard/roadmap.js"></script>
 {% endblock %}

@@ -67,7 +67,10 @@ templates = Jinja2Templates(directory=str(settings.templates_dir))
 @app.get("/", response_class=HTMLResponse)
 async def dashboard(request: Request):
     """Main dashboard: project overview, progress, goals."""
-    return templates.TemplateResponse("dashboard.html", {"request": request})
+    return templates.TemplateResponse(
+        "dashboard.html",
+        {"request": request, "learner_name": settings.learner_name},
+    )
 
 
 @app.get("/workspace/{project_id}", response_class=HTMLResponse)

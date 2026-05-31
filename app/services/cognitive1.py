@@ -116,6 +116,58 @@ class Cognitive1Client:
             "operation": operation,
         })
 
+    # ------------------------------------------------------------------
+    # Agent coordination methods (Phase 3 — multi-agent tutoring)
+    # ------------------------------------------------------------------
+    async def search_memory(
+        self, query: str, max_results: int = 5
+    ) -> list[dict]:
+        """Search Cognitive1 brain for teaching-related memories."""
+        result = await self._post("brain_recall", {
+            "query": query,
+            "project": "MentAi",
+            "max_results": max_results,
+            "mode": "semantic",
+            "format": "json",
+        })
+        return self._extract_content(result) or []
+
+    async def get_suggestions(self) -> list[dict]:
+        """Ask Cognitive1 for suggestions on what to teach next."""
+        result = await self._post("suggest", {"project": "MentAi"})
+        return self._extract_content(result) or []
+
+    async def save_checkpoint(self, what: str, files: str = "") -> None:
+        """Save a mid-tutoring checkpoint in case of interruption."""
+        await self._post("checkpoint", {
+            "project": "MentAi",
+            "what": what,
+            "files": files,
+        })
+
+    # ------------------------------------------------------------------
+    # Helpers
+    # ------------------------------------------------------------------
+    @staticmethod
+    def _extract_content(result: dict | None) -> list[dict] | None:
+        """Extract content array from a JSON-RPC response.
+
+        Cognitive1 MCP returns: {"result": {"content": [{"type": "text", "text": "..."}]}}
+        The text may itself be JSON.
+        """
+        import json as _json
+
+        if not result:
+            return None
+        try:
+            content = result.get("result", {}).get("content", [])
+            if not content:
+                return None
+            text = content[0].get("text", "[]")
+            return _json.loads(text)
+        except Exception:
+            return None
+
 
 # Singleton
 cognitive1 = Cognitive1Client()

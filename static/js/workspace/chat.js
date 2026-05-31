@@ -82,6 +82,10 @@ const Chat = {
       case "concept_exposed":
         this.showConceptToast(data.concept, data.mastery);
         break;
+
+      case "specialist":
+        this.showSpecialist(data.name, data.specialization);
+        break;
     }
   },
 
@@ -147,6 +151,17 @@ const Chat = {
   showConceptToast(concept, mastery) {
     // Lightweight notification — could be a toast, but for now just log
     console.log(`Concept exposed: ${concept} (${mastery})`);
+  },
+
+  /**
+   * Update the chat header to show which specialist is responding.
+   */
+  showSpecialist(name, specialization) {
+    const el = document.getElementById("chat-tutor-name");
+    if (el) {
+      el.textContent = name;
+      el.className = `specialist-badge specialist-${specialization}`;
+    }
   },
 
   /**

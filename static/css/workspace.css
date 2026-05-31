@@ -267,3 +267,15 @@
     border-top: 1px solid var(--color-border);
   }
 }
+
+/* --------------------------------------------------------------------------
+   Specialist badge — shows which expert tutor is active
+   -------------------------------------------------------------------------- */
+.specialist-badge {
+  font-weight: 600;
+  transition: all var(--transition-fast);
+}
+.specialist-python { color: #3572A5; }
+.specialist-database { color: #1a7f37; }
+.specialist-frontend { color: #cf222e; }
+.specialist-general { color: var(--color-text); }

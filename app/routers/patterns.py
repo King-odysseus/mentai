@@ -61,3 +61,16 @@ async def increment_encounter(pattern_id: int, db: AsyncSession = Depends(get_db
     pattern.encounter_count += 1
     await db.flush()
     return {"id": pattern.id, "encounter_count": pattern.encounter_count}
+
+
+@router.get("/project/{project_id}", response_model=list[PatternResponse])
+async def list_patterns_by_project(
+    project_id: int, db: AsyncSession = Depends(get_db)
+):
+    """List all design patterns discovered in a specific project."""
+    result = await db.execute(
+        select(DesignPattern)
+        .where(DesignPattern.discovered_in_project_id == project_id)
+        .order_by(DesignPattern.name)
+    )
+    return [PatternResponse.model_validate(p) for p in result.scalars().all()]

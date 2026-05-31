@@ -22,14 +22,30 @@ logger = logging.getLogger(__name__)
 
 
 class AITutor:
-    """Manages DeepSeek API calls for AI tutoring."""
+    """Manages DeepSeek API calls for AI tutoring.
 
-    def __init__(self):
+    Can be instantiated with a specific persona (e.g. Python specialist)
+    or used as the default general Mentor.
+    """
+
+    def __init__(
+        self,
+        persona_name: str | None = None,
+        persona_prompt: str | None = None,
+    ):
         self.client = AsyncOpenAI(
             api_key=settings.deepseek_api_key,
             base_url=settings.deepseek_base_url,
         )
         self.model = settings.deepseek_model
+        self.persona_name = persona_name
+        self.persona_prompt = persona_prompt
+
+    @property
+    def base_system_prompt(self) -> str:
+        """The base system prompt — uses persona prompt if set, otherwise default."""
+        base = self.persona_prompt or settings.tutor_system_prompt
+        return base.replace("{learner_name}", settings.learner_name)
 
     # ------------------------------------------------------------------
     # Prompt construction
@@ -44,18 +60,19 @@ class AITutor:
     ) -> str:
         """Build the system prompt with all available context layers."""
 
-        parts = [settings.tutor_system_prompt]
+        parts = [self.base_system_prompt]
 
         # Session time awareness — tune response depth
+        name = settings.learner_name
         if session_mode == "micro":
             parts.append(
-                "The learner has only 5-15 minutes right now. Keep responses concise, "
+                f"{name} has only 5-15 minutes right now. Keep responses concise, "
                 "focused on one concept at a time. Avoid long code examples — use short snippets. "
                 "End each response with a specific next step or small challenge."
             )
         else:
             parts.append(
-                "The learner has 30+ minutes for a deep session. Take time to explain concepts "
+                f"{name} has 30+ minutes for a deep session. Take time to explain concepts "
                 "thoroughly. Use realistic code examples. Encourage building and experimentation. "
                 "Ask probing questions to deepen understanding."
             )
@@ -205,5 +222,5 @@ class AITutor:
             return []
 
 
-# Singleton
+# Default singleton — the general Mentor (used when no orchestrator)
 ai_tutor = AITutor()

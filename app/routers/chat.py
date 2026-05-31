@@ -99,7 +99,7 @@ async def tutor_chat(websocket: WebSocket, project_id: int):
                 from app.storage.db import async_session
                 from app.services import concept_tracker as ct
                 from app.services import curriculum as cur
-                from app.services.ai_tutor import ai_tutor
+                from app.services.tutor_orchestrator import orchestrator
                 from app.models.project import LearningProject
                 from sqlalchemy import select
 
@@ -126,11 +126,21 @@ async def tutor_chat(websocket: WebSocket, project_id: int):
                     # Mastery context
                     mastery_context = await ct.get_mastery_for_project(db, project_id)
 
+                # Route to the best specialist tutor
+                specialization = orchestrator.route(content, curriculum_context)
+                specialist_name = orchestrator.get_specialist_name(specialization)
+                await websocket.send_json({
+                    "type": "specialist",
+                    "name": specialist_name,
+                    "specialization": specialization,
+                })
+
                 # Stream the tutor response
                 history.append({"role": "user", "content": content})
                 full_response = ""
 
-                async for delta in ai_tutor.stream_response(
+                async for delta in orchestrator.stream_response(
+                    specialization=specialization,
                     user_message=content,
                     conversation_history=history,
                     project_context=project_context,
@@ -157,7 +167,7 @@ async def tutor_chat(websocket: WebSocket, project_id: int):
                         model=settings.deepseek_model,
                         input_tokens=estimated_input,
                         output_tokens=estimated_output,
-                        operation="tutor_chat",
+                        operation=f"tutor_chat_{specialization}",
                     )
                 except Exception:
                     pass
@@ -165,8 +175,8 @@ async def tutor_chat(websocket: WebSocket, project_id: int):
                 # Try to detect which concepts were covered and record them
                 if mastery_context and curriculum_context:
                     try:
-                        exposed = await ai_tutor.extract_concepts(
-                            full_response, curriculum_context
+                        exposed = await orchestrator.extract_concepts(
+                            specialization, full_response, curriculum_context
                         )
                         async with async_session() as db:
                             for exp in exposed:
@@ -201,7 +211,7 @@ async def tutor_chat(websocket: WebSocket, project_id: int):
                 session_mode = data.get("session_mode", session_mode)
 
                 from app.storage.db import async_session
-                from app.services.ai_tutor import ai_tutor
+                from app.services.tutor_orchestrator import orchestrator
                 from app.models.project import LearningProject
                 from sqlalchemy import select
 
@@ -229,16 +239,26 @@ async def tutor_chat(websocket: WebSocket, project_id: int):
                 review_prompt = (
                     f"Please review the following code from `{file_path}`. "
                     f"Focus on: {focus}.\n\n"
-                    f"Consider the learner's current curriculum position and concept mastery. "
+                    f"Consider {settings.learner_name}'s current curriculum position and concept mastery. "
                     f"Point out what they did well, what could be improved, and connect "
                     f"their code to the roadmap concepts they are learning.\n\n"
                     f"```\n{code}\n```"
                 )
 
+                # Route to the best specialist for this code review
+                specialization = orchestrator.route(review_prompt, curriculum_context)
+                specialist_name = orchestrator.get_specialist_name(specialization)
+                await websocket.send_json({
+                    "type": "specialist",
+                    "name": specialist_name,
+                    "specialization": specialization,
+                })
+
                 history.append({"role": "user", "content": review_prompt})
                 full_response = ""
 
-                async for delta in ai_tutor.stream_response(
+                async for delta in orchestrator.stream_response(
+                    specialization=specialization,
                     user_message=review_prompt,
                     conversation_history=history,
                     project_context=project_context,
@@ -261,7 +281,7 @@ async def tutor_chat(websocket: WebSocket, project_id: int):
                         model=settings.deepseek_model,
                         input_tokens=estimated_input,
                         output_tokens=estimated_output,
-                        operation="code_review",
+                        operation=f"code_review_{specialization}",
                     )
                 except Exception:
                     pass
