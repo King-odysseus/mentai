@@ -123,7 +123,7 @@ Cognitive1 is the memory layer. Every session, every concept mastered, every bug
 | **Chat** | WebSocket streaming via FastAPI | Tutor responses appear word-by-word. Feels alive, not like waiting for a page load. |
 | **Database** | SQLite (MVP) → PostgreSQL | Simple start, easy migration path. |
 | **AI Integration** | DeepSeek API | Powers the tutor's text intelligence. |
-| **Voice TTS** | Browser SpeechSynthesis (MVP) → ElevenLabs or OpenAI TTS | Text-to-speech for tutor responses. Start with free browser API, upgrade to premium TTS later for human-like quality. |
+| **Voice TTS** | Browser SpeechSynthesis with Microsoft Natural Voices | Human-like neural TTS on Windows (Jenny, Aria, Guy, Davis). Local, free, unlimited — same engine as Edge Read Aloud. Just select the right voice. No paid API needed. |
 | **Voice STT** | Browser SpeechRecognition (MVP) → Whisper | Speech-to-text for learner voice input. Free browser API first, upgrade later. |
 | **Curriculum** | Scraped from roadmap.sh, freeCodeCamp, The Odin Project, and others | Unified curriculum model normalized from multiple sources. Extensible — add more sources as needed. |
 | **Memory** | Cognitive1 MCP | Brain, session history, concept tracking, pattern recognition. |
@@ -150,10 +150,23 @@ The tutor can speak and listen. This is an optional layer on top of the text cha
 
 ### Text-to-Speech (Tutor Speaks)
 
-| Stage | Engine | Quality |
-|-------|--------|---------|
-| **MVP (free)** | Browser SpeechSynthesis API | Functional but robotic. Ships immediately with zero cost. |
-| **Upgrade** | ElevenLabs or OpenAI TTS | Human-like prosody, natural pausing, warm tone. Streaming: audio starts playing as soon as the first sentence is generated. |
+Uses the browser's built-in `SpeechSynthesis` API — but with the **Microsoft Natural Voices** that Windows ships with. These are the same neural TTS models that power Edge's Read Aloud:
+
+- On-device neural processing — no cloud, no API key, no usage limit
+- Human-like prosody, natural pausing, warm tone
+- Completely free, forever, on Windows
+
+| Voice | Gender | Accent |
+|-------|--------|--------|
+| Microsoft Aria (Natural) | Female | US English |
+| Microsoft Jenny (Natural) | Female | US English |
+| Microsoft Guy (Natural) | Male | US English |
+| Microsoft Davis (Natural) | Male | US English |
+| Microsoft Sonia (Natural) | Female | UK English |
+
+**How it works:** Most apps sound robotic because they accept whatever voice `speechSynthesis` defaults to (usually David or Zira — the old non-neural voices). The fix is one line: enumerate available voices, pick one with `"Natural"` in the name. That is what Edge Read Aloud does.
+
+**On Linux:** Natural voices may require installing `speech-dispatcher` and espeak-ng (functional but less human-like). For non-Windows platforms, a future upgrade path to ElevenLabs or OpenAI TTS remains available.
 
 ### Speech-to-Text (Learner Speaks)
 
@@ -165,15 +178,11 @@ The tutor can speak and listen. This is an optional layer on top of the text cha
 ### How It Works
 
 1. Learner clicks the speaker icon in the chat panel — voice mode on.
-2. Microphone activates (browser SpeechRecognition captures speech).
+2. Microphone activates (browser `SpeechRecognition` captures speech).
 3. Learner speaks a question. Text appears in the chat input. Sent to DeepSeek.
-4. DeepSeek's text response streams back — displayed in chat AND spoken by TTS simultaneously.
+4. DeepSeek's text response streams back via WebSocket — displayed in chat AND spoken by TTS simultaneously (Microsoft Natural voice).
 5. Voice stops when the response is done, or learner can interrupt (tap to stop speaking).
 6. Learner clicks speaker icon again — voice mode off, back to text-only.
-
-### Free Tier Reality Check
-
-ElevenLabs free tier: ~10 mins/month. Fine for a few sessions but not daily use. Browser SpeechSynthesis is unlimited and free — start there. Upgrade to paid TTS when the experience warrants it.
 
 ---
 
@@ -224,7 +233,7 @@ Project overview, progress charts, concept tracker, session history, daily goals
 2. **Curriculum:** Scraped from roadmap.sh, freeCodeCamp, The Odin Project, and other sources. Ingested into a unified curriculum model. Extensible to add more sources later.
 3. **UI:** Dashboard for overview + three-panel workspace (file tree, code editor, chat) for learning sessions.
 4. **Project files:** On disk. Real filesystem, real git, real pip. Portable and Cognitive1-readable.
-5. **Voice tutor:** Speak toggle like ChatGPT voice mode. Browser SpeechSynthesis + SpeechRecognition for free MVP. Upgrade path to ElevenLabs/OpenAI TTS and Whisper STT for human-like quality.
+5. **Voice tutor:** Speak toggle like ChatGPT voice mode. Uses browser SpeechSynthesis with Microsoft Natural Voices (Jenny, Aria, Guy, Davis) — same engine as Edge Read Aloud. Local, free, human-like on Windows. Browser SpeechRecognition for STT. No paid API needed.
 
 ---
 
