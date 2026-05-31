@@ -123,7 +123,7 @@ Cognitive1 is the memory layer. Every session, every concept mastered, every bug
 | **Chat** | WebSocket streaming via FastAPI | Tutor responses appear word-by-word. Feels alive, not like waiting for a page load. |
 | **Database** | SQLite (MVP) → PostgreSQL | Simple start, easy migration path. |
 | **AI Integration** | DeepSeek API | Powers the tutor's text intelligence. |
-| **Voice TTS** | Browser SpeechSynthesis with Microsoft Natural Voices | Human-like neural TTS on Windows (Jenny, Aria, Guy, Davis). Local, free, unlimited — same engine as Edge Read Aloud. Just select the right voice. No paid API needed. |
+| **Voice TTS** | Browser SpeechSynthesis with Windows Natural Voices | On-device neural TTS (Jenny, Aria, Guy, Davis). One-time install via Windows Settings, then free and offline-capable. Not the same as Edge's cloud Azure TTS — actually local. |
 | **Voice STT** | Browser SpeechRecognition (MVP) → Whisper | Speech-to-text for learner voice input. Free browser API first, upgrade later. |
 | **Curriculum** | Scraped from roadmap.sh, freeCodeCamp, The Odin Project, and others | Unified curriculum model normalized from multiple sources. Extensible — add more sources as needed. |
 | **Memory** | Cognitive1 MCP | Brain, session history, concept tracking, pattern recognition. |
@@ -150,11 +150,15 @@ The tutor can speak and listen. This is an optional layer on top of the text cha
 
 ### Text-to-Speech (Tutor Speaks)
 
-Uses the browser's built-in `SpeechSynthesis` API — but with the **Microsoft Natural Voices** that Windows ships with. These are the same neural TTS models that power Edge's Read Aloud:
+Uses the browser's built-in `SpeechSynthesis` API with **on-device** neural voices.
 
-- On-device neural processing — no cloud, no API key, no usage limit
-- Human-like prosody, natural pausing, warm tone
-- Completely free, forever, on Windows
+**What Edge actually does (and why offline = robotic):** Edge's Read Aloud normally streams from Azure Neural TTS (cloud). That is why it sounds great online and falls back to the robotic David/Zira voices when the network drops — the cloud voices are not on your machine, and the old robotic voices are the only guaranteed local ones.
+
+**What MentAi does instead:** Use the on-device Natural Voices. These are downloadable neural TTS models that run locally on Windows — no cloud, no API key, no usage limit, works offline.
+
+The catch: they are not pre-installed. The learner installs them once:
+
+> Settings > Time & Language > Speech > Manage voices > Add voices
 
 | Voice | Gender | Accent |
 |-------|--------|--------|
@@ -164,7 +168,7 @@ Uses the browser's built-in `SpeechSynthesis` API — but with the **Microsoft N
 | Microsoft Davis (Natural) | Male | US English |
 | Microsoft Sonia (Natural) | Female | UK English |
 
-**How it works:** Most apps sound robotic because they accept whatever voice `speechSynthesis` defaults to (usually David or Zira — the old non-neural voices). The fix is one line: enumerate available voices, pick one with `"Natural"` in the name. That is what Edge Read Aloud does.
+Once installed, they appear in `speechSynthesis.getVoices()` and any browser can use them. The code selects the first voice with `"Natural"` in the name. If none are installed, it falls back to the best available voice and the app prompts the learner to install Natural Voices for a better experience.
 
 **On Linux:** Natural voices may require installing `speech-dispatcher` and espeak-ng (functional but less human-like). For non-Windows platforms, a future upgrade path to ElevenLabs or OpenAI TTS remains available.
 
@@ -233,7 +237,7 @@ Project overview, progress charts, concept tracker, session history, daily goals
 2. **Curriculum:** Scraped from roadmap.sh, freeCodeCamp, The Odin Project, and other sources. Ingested into a unified curriculum model. Extensible to add more sources later.
 3. **UI:** Dashboard for overview + three-panel workspace (file tree, code editor, chat) for learning sessions.
 4. **Project files:** On disk. Real filesystem, real git, real pip. Portable and Cognitive1-readable.
-5. **Voice tutor:** Speak toggle like ChatGPT voice mode. Uses browser SpeechSynthesis with Microsoft Natural Voices (Jenny, Aria, Guy, Davis) — same engine as Edge Read Aloud. Local, free, human-like on Windows. Browser SpeechRecognition for STT. No paid API needed.
+5. **Voice tutor:** Speak toggle like ChatGPT voice mode. Uses on-device Windows Natural Voices (one-time install via Settings) — local, free, offline-capable. Browser SpeechRecognition for STT. Not the same as Edge's cloud Azure TTS — this actually works offline.
 
 ---
 
