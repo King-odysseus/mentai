@@ -112,16 +112,60 @@ Cognitive1 is the memory layer. Every session, every concept mastered, every bug
 
 ---
 
-## Tech Stack (Proposed)
+## Tech Stack (Decided)
 
 | Layer | Choice | Rationale |
 |-------|--------|-----------|
-| **Backend** | Python (FastAPI) | The learner's target language. The platform is built in what it teaches. |
-| **Frontend** | HTML + CSS + JavaScript (progressively enhanced) | Matches the learner's current skills. Can evolve to a framework later. |
+| **Backend** | Python (FastAPI) | Async-native, WebSocket support for real-time chat streaming. Auto-generated API docs. The platform is built in the same stack the learner is studying — the codebase doubles as reference material. |
+| **Frontend** | HTML + CSS + vanilla JS (progressively enhanced) | Matches the learner's current skills. Server-rendered Jinja2 templates. No build step, no framework to learn before the learner is ready. Can evolve: Alpine.js or Web Components later. |
+| **Code Editor** | CodeMirror 6 (vanilla JS embed) | Lighter than Monaco. Real Python execution on the backend — real filesystem, real pip, real git. |
+| **Chat** | WebSocket streaming via FastAPI | Tutor responses appear word-by-word. Feels alive, not like waiting for a page load. |
 | **Database** | SQLite (MVP) → PostgreSQL | Simple start, easy migration path. |
 | **AI Integration** | DeepSeek API | Powers the tutor. |
-| **External APIs** | roadmap.sh, Cognitive1 MCP | Curriculum and memory. |
-| **Deployment** | Local-first, optional cloud | Learner runs it where they want. |
+| **Curriculum** | Scraped from roadmap.sh + freeCodeCamp + others | Unified curriculum model normalized from multiple sources. |
+| **Memory** | Cognitive1 MCP | Brain, session history, concept tracking, pattern recognition. |
+| **Project Files** | On disk (real filesystem) | Real git, real pip, real everything. Projects are portable and Cognitive1 can read them directly. |
+| **Deployment** | Local-first | Runs where the learner is. |
+
+### Progressive Enhancement Path
+
+The frontend grows with the learner's skills — not ahead of them.
+
+| Stage | Learner knows | Platform layer |
+|-------|-------------|----------------|
+| **Now** | HTML, CSS, basic JS | Server-rendered Jinja2 templates, forms, full-page navigation |
+| **Soon** | FastAPI, HTTP, routes | Static files, template inheritance, basic JS interactivity |
+| **Later** | WebSockets, async Python | Real-time tutor chat streaming, live code output |
+| **Eventually** | REST APIs, fetch, DOM | Partial-page updates, smoother transitions |
+
+---
+
+## UI Layout
+
+Three-panel workspace for learning sessions. Dashboard for overview.
+
+### Workspace Layout
+
+```
+┌──────────┬──────────────────────┐
+│          │                      │
+│  File    │    Code Editor       │
+│  Tree    │    (CodeMirror 6)    │
+│          │                      │
+│  ─ .py   │                      │
+│  ─ .html │                      │
+│  ─ .css  │                      │
+│          ├──────────────────────┤
+│          │                      │
+│          │    AI Tutor Chat     │
+│          │    (streaming)       │
+│          │                      │
+└──────────┴──────────────────────┘
+```
+
+### Dashboard
+
+Project overview, progress charts, concept tracker, session history, daily goals. Switches to workspace when a learning session starts.
 
 ---
 
@@ -135,13 +179,13 @@ Cognitive1 is the memory layer. Every session, every concept mastered, every bug
 
 ---
 
-## Open Questions
+## Resolved Decisions
 
-1. Should the platform itself be one of the learning projects — i.e., the learner builds MentAi as they learn?
-2. What is the exact shape of roadmap.sh data we can consume? API? Scrape?
-3. Should the chat interface be the primary UI, or should there be a structured dashboard + chat panel?
-4. Host projects as actual files on disk, in-browser via WebContainers, or a hybrid?
+1. **Tech stack:** Python (FastAPI) backend, HTML/CSS/vanilla JS frontend, progressively enhanced. FastAPI chosen for async/WebSocket support and because it is the learner's target stack.
+2. **Curriculum:** Scraped from roadmap.sh, freeCodeCamp, and other sources. Ingested into a unified curriculum model.
+3. **UI:** Dashboard for overview + three-panel workspace (file tree, code editor, chat) for learning sessions.
+4. **Project files:** On disk. Real filesystem, real git, real pip. Portable and Cognitive1-readable.
 
 ---
 
-*Draft created 2026-05-31. This is a living document — it will evolve as the project takes shape.*
+*Created 2026-05-31. Updated with architecture decisions 2026-05-31. This is a living document.*
