@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}MentAi{% endblock %}</title>
+  <link rel="stylesheet" href="/static/css/main.css">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  <nav class="topnav">
+    <a href="/" class="topnav-brand">🧠 MentAi</a>
+    <div class="topnav-links">
+      <a href="/" class="topnav-link">Dashboard</a>
+      <a href="/api/health" class="topnav-link" target="_blank">API Health</a>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

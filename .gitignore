@@ -1,7 +1,42 @@
-
 Instruct.md
 .claude/
 .kilo/
 .qwen/
 .continue/
 .cursor/
+
+# Python
+__pycache__/
+*.py[cod]
+data/
+*.egg-info/
+dist/
+*.egg
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Environment
+.env
+.env.local
+
+# IDE / Editor
+.vscode/
+.idea/
+
+# Database
+*.db
+*.sqlite3
+
+# Workspace (learner project files)
+workspace/*
+!workspace/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

@@ -1,0 +1,269 @@
+/* ==========================================================================
+   Workspace — Three-panel IDE layout
+   ========================================================================== */
+
+.workspace {
+  display: grid;
+  grid-template-columns: 220px 1fr 340px;
+  height: calc(100vh - 48px);
+  overflow: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   Panels
+   -------------------------------------------------------------------------- */
+.panel {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  overflow: hidden;
+}
+.panel-right { border-right: none; border-left: 1px solid var(--color-border); }
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+  min-height: 40px;
+  flex-shrink: 0;
+}
+.panel-header h3 {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.panel-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-sm);
+}
+
+.panel-footer {
+  padding: var(--space-sm);
+  border-top: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------------
+   File Tree
+   -------------------------------------------------------------------------- */
+.file-tree-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 4px 8px;
+  font-size: var(--font-size-sm);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  user-select: none;
+}
+.file-tree-item:hover { background: var(--color-bg); }
+.file-tree-item.selected {
+  background: #ddf4ff;
+  color: var(--color-primary);
+  font-weight: 500;
+}
+.file-tree-item .icon { font-size: 0.875rem; width: 18px; text-align: center; flex-shrink: 0; }
+.file-tree-item .name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --------------------------------------------------------------------------
+   Code Editor
+   -------------------------------------------------------------------------- */
+.editor-body {
+  padding: 0;
+  overflow: hidden;
+}
+.editor-body .cm-editor {
+  height: 100%;
+}
+.editor-body .cm-editor .cm-scroller {
+  overflow: auto;
+}
+
+.editor-actions {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+/* Run output */
+.output-panel {
+  border-top: 2px solid var(--color-border);
+  flex-shrink: 0;
+  max-height: 200px;
+  display: flex;
+  flex-direction: column;
+}
+.output-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-xs) var(--space-md);
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+.output-content {
+  flex: 1;
+  overflow: auto;
+  padding: var(--space-sm) var(--space-md);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  background: #1b1f23;
+  color: #e6edf3;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* --------------------------------------------------------------------------
+   Chat Panel
+   -------------------------------------------------------------------------- */
+.chat-messages {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+}
+
+.chat-msg {
+  max-width: 90%;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+.chat-msg.learner {
+  align-self: flex-end;
+  background: var(--color-primary);
+  color: var(--color-primary-text);
+  border-bottom-right-radius: 2px;
+}
+
+.chat-msg.tutor {
+  align-self: flex-start;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-bottom-left-radius: 2px;
+}
+
+.chat-msg.tutor.streaming {
+  border-color: var(--color-primary);
+}
+
+.chat-msg p { margin: 0; }
+.chat-msg p + p { margin-top: var(--space-sm); }
+
+/* Code blocks in chat */
+.chat-msg code {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  background: rgba(0,0,0,0.08);
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+.chat-msg pre {
+  background: #1b1f23;
+  color: #e6edf3;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  margin: var(--space-sm) 0;
+}
+.chat-msg pre code {
+  background: none;
+  padding: 0;
+}
+
+.chat-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.select-sm {
+  font-size: var(--font-size-sm);
+  padding: 2px 6px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}
+
+/* Chat input area */
+.chat-input-area {
+  display: flex;
+  gap: var(--space-xs);
+  align-items: flex-end;
+}
+
+.chat-input-area textarea {
+  flex: 1;
+  resize: none;
+  padding: var(--space-sm);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  line-height: 1.4;
+}
+.chat-input-area textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.btn-send {
+  flex-shrink: 0;
+  padding: var(--space-sm) var(--space-md);
+}
+
+/* Voice status bar */
+.voice-status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-xs) var(--space-sm);
+  background: #eaf5ea;
+  border-top: 1px solid #c3e6c3;
+  font-size: var(--font-size-sm);
+}
+.voice-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-success);
+  animation: pulse 1.5s infinite;
+}
+.voice-indicator.speaking { background: var(--color-primary); }
+.voice-indicator.error { background: var(--color-danger); animation: none; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* Responsive: stack panels on small screens */
+@media (max-width: 900px) {
+  .workspace {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+  }
+  .panel-left { display: none; }
+  .panel-right {
+    max-height: 40vh;
+    border-left: none;
+    border-top: 1px solid var(--color-border);
+  }
+}

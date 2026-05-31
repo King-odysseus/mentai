@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}MentAi — Dashboard{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/dashboard.css">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+  <!-- Header -->
+  <header class="dash-header">
+    <h1>Welcome back, learner 👋</h1>
+    <p class="dash-subtitle">Your full-stack journey, one project at a time.</p>
+  </header>
+
+  <!-- Stats row -->
+  <section class="stats-row" id="stats-row">
+    <div class="stat-card">
+      <div class="stat-value" id="stat-projects">—</div>
+      <div class="stat-label">Projects</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="stat-concepts">—</div>
+      <div class="stat-label">Concepts Tracked</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="stat-sessions">—</div>
+      <div class="stat-label">Sessions</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="stat-mastered">—</div>
+      <div class="stat-label">Mastered</div>
+    </div>
+  </section>
+
+  <!-- Project list + Quick actions -->
+  <section class="dash-grid">
+    <!-- Projects -->
+    <div class="dash-card" id="projects-card">
+      <div class="card-header">
+        <h2>Your Projects</h2>
+        <button class="btn btn-primary" id="btn-new-project">+ New Project</button>
+      </div>
+      <div class="project-list" id="project-list">
+        <p class="empty-state">No projects yet. Create one to start learning!</p>
+      </div>
+    </div>
+
+    <!-- Quick session -->
+    <div class="dash-card">
+      <div class="card-header">
+        <h2>Quick Session</h2>
+      </div>
+      <div class="session-options">
+        <button class="session-btn micro" id="btn-micro-session">
+          <span class="session-icon">⚡</span>
+          <span class="session-label">Micro Session</span>
+          <span class="session-time">5–15 min</span>
+          <span class="session-desc">Quick concept review or code walkthrough</span>
+        </button>
+        <button class="session-btn deep" id="btn-deep-session">
+          <span class="session-icon">🔨</span>
+          <span class="session-label">Deep Build</span>
+          <span class="session-time">30–120 min</span>
+          <span class="session-desc">Build features, refactor, deep architecture discussions</span>
+        </button>
+      </div>
+      <p class="session-hint">Select a project first, then pick a session type.</p>
+    </div>
+
+    <!-- Concept mastery summary -->
+    <div class="dash-card">
+      <div class="card-header">
+        <h2>Concept Mastery</h2>
+      </div>
+      <div class="mastery-bars" id="mastery-bars">
+        <p class="empty-state">Start a project and your concept progress will appear here.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- New Project Modal -->
+<dialog id="new-project-modal">
+  <form id="new-project-form" method="dialog">
+    <h2>Create New Project</h2>
+    <div class="form-group">
+      <label for="proj-name">Project Name</label>
+      <input type="text" id="proj-name" name="name" required placeholder="e.g. Task Tracker API" maxlength="255">
+    </div>
+    <div class="form-group">
+      <label for="proj-desc">Description</label>
+      <textarea id="proj-desc" name="description" rows="3" placeholder="What will this project do?"></textarea>
+    </div>
+    <div class="form-group">
+      <label for="proj-stack">Tech Stack</label>
+      <input type="text" id="proj-stack" name="tech_stack" placeholder="e.g. Python, FastAPI, SQLite">
+    </div>
+    <div class="form-actions">
+      <button type="button" class="btn btn-secondary" id="btn-cancel-project">Cancel</button>
+      <button type="submit" class="btn btn-primary">Create Project</button>
+    </div>
+  </form>
+</dialog>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/dashboard/dashboard.js"></script>
+{% endblock %}
