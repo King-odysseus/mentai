@@ -115,7 +115,22 @@ const Editor = {
   async save() {
     if (!this.currentPath || !this.view) return;
 
-    const content = this.view.state.doc.toString();
+    // Auto-format before saving: tabs→spaces, trim trailing whitespace, trailing newline
+    let content = this.view.state.doc.toString();
+    content = content.replace(/\t/g, "    ");
+    content = content.split("\n").map((line) => line.trimEnd()).join("\n");
+    content = content.trimEnd() + "\n";
+
+    // Update editor with formatted content
+    const { EditorView } = window.CodeMirror;
+    const currentPos = this.view.state.selection.main.head;
+    this.view.dispatch({
+      changes: { from: 0, to: this.view.state.doc.length, insert: content },
+    });
+    // Restore cursor position approximately
+    const newPos = Math.min(currentPos, content.length);
+    this.view.dispatch({ selection: { anchor: newPos } });
+
     const projectId = document.querySelector(".workspace")?.dataset.projectId;
 
     try {
@@ -130,7 +145,7 @@ const Editor = {
       document.getElementById("editor-title").textContent = `📝 ${this.currentPath}`;
       // Brief visual feedback
       const btn = document.getElementById("btn-save-file");
-      btn.textContent = "✅ Saved";
+      btn.textContent = "✅ Formatted & Saved";
       setTimeout(() => (btn.textContent = "💾 Save"), 1500);
     } catch (err) {
       alert("Failed to save: " + err.message);
@@ -152,7 +167,7 @@ const Editor = {
   },
 
   /**
-   * Run the current Python file and show output.
+   * Run the current Python file and show output. Auto-saves first.
    */
   async run() {
     if (!this.currentPath || !this.view) return;
@@ -162,6 +177,16 @@ const Editor = {
     const outputContent = document.getElementById("output-content");
 
     outputPanel.hidden = false;
+    outputContent.textContent = "Saving & running...";
+
+    // Auto-save before running so the latest code executes
+    try {
+      await this.save();
+    } catch (e) {
+      outputContent.textContent = "Failed to save: " + e.message;
+      return;
+    }
+
     outputContent.textContent = "Running...";
 
     try {
@@ -171,7 +196,17 @@ const Editor = {
         body: JSON.stringify({ path: this.currentPath }),
       });
       const data = await res.json();
-      outputContent.textContent = data.output || data.error || "(no output)";
+
+      let text = "";
+      if (data.output) text += data.output;
+      if (data.error) text += (text ? "\n" : "") + "[stderr]\n" + data.error;
+      if (!text) {
+        text =
+          data.exit_code === 0
+            ? "Program finished with no output."
+            : `Program exited with code ${data.exit_code}.`;
+      }
+      outputContent.textContent = text;
     } catch (err) {
       outputContent.textContent = "Error running file: " + err.message;
     }
