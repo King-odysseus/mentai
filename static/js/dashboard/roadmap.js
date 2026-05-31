@@ -91,6 +91,43 @@ const Roadmap = {
     });
   },
 
+  setupImportButtons() {
+    const sources = {
+      "btn-import-fcc": "freecodecamp",
+      "btn-import-rs": "roadmapsh",
+      "btn-import-top": "odinproject",
+      "btn-import-all": "all",
+    };
+
+    for (const [btnId, source] of Object.entries(sources)) {
+      const btn = document.getElementById(btnId);
+      if (btn) {
+        btn.addEventListener("click", () => this.importSource(source));
+      }
+    }
+  },
+
+  async importSource(source) {
+    const url = `/api/curriculum/import/${source}`;
+    const container = document.getElementById("roadmap-list");
+    container.innerHTML = '<p class="empty-state">Importing curriculum... this may take a moment.</p>';
+
+    try {
+      const res = await fetch(url, { method: "POST" });
+      const data = await res.json();
+      if (data.imports) {
+        // Bulk import response
+        const total = data.imports.reduce((s, i) => s + (i.modules_created || 0), 0);
+        container.innerHTML = `<p class="empty-state">Import complete! ${total} new modules added across ${data.imports.length} sources. Refreshing...</p>`;
+      } else {
+        container.innerHTML = `<p class="empty-state">Import complete! ${data.modules_created || 0} modules, ${data.concepts_created || 0} concepts from ${data.source}. Refreshing...</p>`;
+      }
+      setTimeout(() => this.load(), 800);
+    } catch (e) {
+      container.innerHTML = `<p class="empty-state">Import failed: ${e.message}</p>`;
+    }
+  },
+
   async promptNewModule() {
     const title = prompt("Module title:");
     if (!title) return;
@@ -162,4 +199,5 @@ const Roadmap = {
 
 document.addEventListener("DOMContentLoaded", () => {
   Roadmap.load();
+  Roadmap.setupImportButtons();
 });

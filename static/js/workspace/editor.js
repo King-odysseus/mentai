@@ -178,9 +178,43 @@ const Editor = {
   },
 };
 
-// Close output button
+// Output panel resize and close
 document.addEventListener("DOMContentLoaded", () => {
+  // Close button
   document.getElementById("btn-close-output")?.addEventListener("click", () => {
     document.getElementById("output-panel").hidden = true;
   });
+
+  // Drag-to-resize output panel
+  const handle = document.getElementById("output-resize-handle");
+  const outputPanel = document.getElementById("output-panel");
+  if (handle && outputPanel) {
+    let startY = 0;
+    let startHeight = 0;
+
+    handle.addEventListener("mousedown", (e) => {
+      startY = e.clientY;
+      startHeight = outputPanel.offsetHeight;
+      handle.classList.add("active");
+      document.body.style.cursor = "ns-resize";
+      document.body.style.userSelect = "none";
+
+      const onMouseMove = (e) => {
+        const delta = startY - e.clientY;
+        const newHeight = Math.max(80, Math.min(window.innerHeight * 0.6, startHeight + delta));
+        outputPanel.style.height = newHeight + "px";
+      };
+
+      const onMouseUp = () => {
+        handle.classList.remove("active");
+        document.body.style.cursor = "";
+        document.body.style.userSelect = "";
+        document.removeEventListener("mousemove", onMouseMove);
+        document.removeEventListener("mouseup", onMouseUp);
+      };
+
+      document.addEventListener("mousemove", onMouseMove);
+      document.addEventListener("mouseup", onMouseUp);
+    });
+  }
 });

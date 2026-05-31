@@ -38,24 +38,49 @@ async def seed(db: AsyncSession = Depends(get_db)):
 
 
 # ---------------------------------------------------------------------------
-# roadmap.sh live scraper
+# Live curriculum import (Phase 4)
 # ---------------------------------------------------------------------------
-@router.post("/refresh/{roadmap}")
-async def refresh_curriculum(roadmap: str):
-    """Fetch fresh roadmap data from roadmap.sh and return parsed topics.
+@router.post("/import/freecodecamp")
+async def import_freecodecamp(db: AsyncSession = Depends(get_db)):
+    """Import freeCodeCamp curriculum from GitHub. Idempotent — updates existing."""
+    from app.services.curriculum_importer import FreeCodeCampImporter
 
-    Read-only preview — does not auto-merge into the database.
-    Full merge deferred until parsing is stable.
-    """
-    from app.services.roadmap_scraper import fetch_roadmap_topics
+    importer = FreeCodeCampImporter()
+    stats = await importer.import_all(db)
+    await db.commit()
+    return stats
 
-    try:
-        topics = await fetch_roadmap_topics(roadmap)
-        return {"roadmap": roadmap, "topics_found": len(topics), "topics": topics}
-    except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc))
-    except Exception as exc:
-        raise HTTPException(status_code=502, detail=f"Failed to fetch roadmap: {exc}")
+
+@router.post("/import/roadmapsh")
+async def import_roadmapsh(db: AsyncSession = Depends(get_db)):
+    """Import roadmap.sh curriculum from GitHub. Idempotent — updates existing."""
+    from app.services.curriculum_importer import RoadmapShImporter
+
+    importer = RoadmapShImporter()
+    stats = await importer.import_all(db)
+    await db.commit()
+    return stats
+
+
+@router.post("/import/odinproject")
+async def import_odinproject(db: AsyncSession = Depends(get_db)):
+    """Import The Odin Project course structure from GitHub. Idempotent."""
+    from app.services.curriculum_importer import OdinProjectImporter
+
+    importer = OdinProjectImporter()
+    stats = await importer.import_all(db)
+    await db.commit()
+    return stats
+
+
+@router.post("/import/all")
+async def import_all_sources(db: AsyncSession = Depends(get_db)):
+    """Run all curriculum importers. Returns per-source stats."""
+    from app.services.curriculum_importer import import_all_sources as run_all
+
+    results = await run_all(db)
+    await db.commit()
+    return {"imports": results}
 
 
 # ---------------------------------------------------------------------------

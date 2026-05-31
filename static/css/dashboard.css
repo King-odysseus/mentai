@@ -461,3 +461,10 @@ dialog h2 { margin-bottom: var(--space-lg); }
   margin-top: 4px;
   font-size: 0.75rem;
 }
+
+/* Roadmap import buttons */
+.roadmap-actions {
+  display: flex;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+}

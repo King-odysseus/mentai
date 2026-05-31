@@ -121,7 +121,13 @@
     <div class="dash-card" style="grid-column: 1 / -1;">
       <div class="card-header">
         <h2>Custom Roadmap</h2>
-        <button class="btn btn-sm btn-primary" id="btn-new-module">+ Module</button>
+        <div class="roadmap-actions">
+          <button class="btn btn-sm btn-primary" id="btn-new-module">+ Module</button>
+          <button class="btn btn-sm btn-secondary" id="btn-import-fcc">Import freeCodeCamp</button>
+          <button class="btn btn-sm btn-secondary" id="btn-import-rs">Import roadmap.sh</button>
+          <button class="btn btn-sm btn-secondary" id="btn-import-top">Import Odin Project</button>
+          <button class="btn btn-sm btn-secondary" id="btn-import-all">Import All</button>
+        </div>
       </div>
       <div class="roadmap-list" id="roadmap-list">
         <p class="empty-state">Loading curriculum...</p>

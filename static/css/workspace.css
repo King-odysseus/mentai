@@ -100,15 +100,34 @@
 .output-panel {
   border-top: 2px solid var(--color-border);
   flex-shrink: 0;
-  max-height: 200px;
+  min-height: 80px;
+  max-height: 60vh;
+  height: 200px;
   display: flex;
   flex-direction: column;
+  position: relative;
+}
+.output-resize-handle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  cursor: ns-resize;
+  z-index: 10;
+  background: transparent;
+  transition: background var(--transition-fast);
+}
+.output-resize-handle:hover,
+.output-resize-handle.active {
+  background: var(--color-primary);
 }
 .output-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: var(--space-xs) var(--space-md);
+  padding-top: 6px; /* space for resize handle */
   background: var(--color-bg);
   border-bottom: 1px solid var(--color-border);
   font-size: var(--font-size-sm);
