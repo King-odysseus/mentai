@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Onboarding — Account creation (Neumorphic)
+   Onboarding — Account creation (Glassmorphism)
    ========================================================================== */
 
 .onboarding {
@@ -14,70 +14,64 @@
 }
 .onboarding-header h1 {
   font-size: var(--font-size-3xl);
-  font-weight: 800;
-  color: var(--neu-text);
+  font-weight: 700;
+  color: var(--glass-text);
+  text-shadow: 0 2px 12px rgba(0,0,0,0.4);
   letter-spacing: -0.03em;
 }
 .onboarding-header p {
-  color: var(--neu-text-secondary);
+  color: var(--glass-text-secondary);
   margin-top: var(--space-sm);
   font-size: var(--font-size-lg);
 }
 
 .onboarding-form {
-  background: var(--neu-surface);
-  border: none;
+  background: var(--glass-surface);
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-xl);
   padding: var(--space-2xl);
-  box-shadow: var(--neu-shadow-lg);
+  box-shadow: var(--shadow-glass-lg);
 }
 
 .form-section {
   margin-bottom: var(--space-xl);
   padding-bottom: var(--space-xl);
-  border-bottom: 1px solid var(--neu-border-dark);
+  border-bottom: 1px solid var(--glass-border);
 }
 .form-section:last-of-type { border-bottom: none; margin-bottom: 0; }
 .form-section h3 {
   font-size: var(--font-size-base);
-  font-weight: 700;
-  margin-bottom: var(--space-md);
-  color: var(--neu-text);
-}
-
-.exp-grid, .stack-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-md);
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-.form-group label {
-  font-size: var(--font-size-sm);
   font-weight: 600;
-  color: var(--neu-text-secondary);
+  margin-bottom: var(--space-md);
+  color: var(--glass-text);
 }
+
+.exp-grid, .stack-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
+
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group label { font-size: var(--font-size-sm); font-weight: 600; color: var(--glass-text-secondary); }
 .form-group input,
 .form-group select {
   padding: 12px 16px;
-  border: none;
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
   font-size: var(--font-size-sm);
   font-family: var(--font-sans);
-  background: var(--neu-bg);
-  box-shadow: var(--neu-inset-sm);
+  background: rgba(0,0,0,0.2);
+  color: var(--glass-text);
   transition: all var(--transition);
 }
 .form-group input:focus,
 .form-group select:focus {
   outline: none;
-  box-shadow: inset 3px 3px 7px rgba(0,0,0,0.1), inset -3px -3px 7px rgba(255,255,255,0.9), 0 0 0 3px rgba(108,92,231,0.15);
+  border-color: var(--glass-primary);
+  background: rgba(0,0,0,0.3);
+  box-shadow: 0 0 0 3px rgba(167,139,250,0.12);
 }
+.form-group select option { background: #1e1b4b; color: var(--glass-text); }
 
 .form-actions { text-align: center; margin-top: var(--space-xl); }
 .btn-lg { padding: 16px 36px; font-size: var(--font-size-base); font-weight: 700; border-radius: var(--radius-md); }
-.form-footer { text-align: center; font-size: var(--font-size-sm); color: var(--neu-text-secondary); margin-top: var(--space-md); }
+.form-footer { text-align: center; font-size: var(--font-size-sm); color: var(--glass-text-muted); margin-top: var(--space-md); }

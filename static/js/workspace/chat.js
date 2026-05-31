@@ -269,6 +269,9 @@ const Chat = {
   },
 };
 
+// Expose on window for learning-path.js to access
+window.Chat = Chat;
+
 function escapeHtml(str) {
   const div = document.createElement("div");
   div.textContent = str;
