@@ -117,12 +117,12 @@ Cognitive1 is the memory layer. Every session, every concept mastered, every bug
 | Layer | Choice | Rationale |
 |-------|--------|-----------|
 | **Backend** | Python (FastAPI) | Async-native, WebSocket support for real-time chat streaming. Auto-generated API docs. The platform is built in the same stack the learner is studying — the codebase doubles as reference material. |
-| **Frontend** | HTML + CSS + vanilla JS (progressively enhanced) | Matches the learner's current skills. Server-rendered Jinja2 templates. No build step, no framework to learn before the learner is ready. Can evolve: Alpine.js or Web Components later. |
+| **Frontend** | HTML + CSS + vanilla JS (progressively enhanced) | Matches the learner's current skills. Server-rendered Jinja2 templates. No build step, no framework to learn before the learner is ready. Can evolve: Alpine.js or Web Components, then React when the learner reaches that stage. |
 | **Code Editor** | CodeMirror 6 (vanilla JS embed) | Lighter than Monaco. Real Python execution on the backend — real filesystem, real pip, real git. |
 | **Chat** | WebSocket streaming via FastAPI | Tutor responses appear word-by-word. Feels alive, not like waiting for a page load. |
 | **Database** | SQLite (MVP) → PostgreSQL | Simple start, easy migration path. |
 | **AI Integration** | DeepSeek API | Powers the tutor. |
-| **Curriculum** | Scraped from roadmap.sh + freeCodeCamp + others | Unified curriculum model normalized from multiple sources. |
+| **Curriculum** | Scraped from roadmap.sh, freeCodeCamp, The Odin Project, and others | Unified curriculum model normalized from multiple sources. Extensible — add more sources as needed. |
 | **Memory** | Cognitive1 MCP | Brain, session history, concept tracking, pattern recognition. |
 | **Project Files** | On disk (real filesystem) | Real git, real pip, real everything. Projects are portable and Cognitive1 can read them directly. |
 | **Deployment** | Local-first | Runs where the learner is. |
@@ -137,6 +137,7 @@ The frontend grows with the learner's skills — not ahead of them.
 | **Soon** | FastAPI, HTTP, routes | Static files, template inheritance, basic JS interactivity |
 | **Later** | WebSockets, async Python | Real-time tutor chat streaming, live code output |
 | **Eventually** | REST APIs, fetch, DOM | Partial-page updates, smoother transitions |
+| **Beyond** | React, component architecture, state | Platform frontend can be rebuilt in React as a learning project itself |
 
 ---
 
@@ -182,7 +183,7 @@ Project overview, progress charts, concept tracker, session history, daily goals
 ## Resolved Decisions
 
 1. **Tech stack:** Python (FastAPI) backend, HTML/CSS/vanilla JS frontend, progressively enhanced. FastAPI chosen for async/WebSocket support and because it is the learner's target stack.
-2. **Curriculum:** Scraped from roadmap.sh, freeCodeCamp, and other sources. Ingested into a unified curriculum model.
+2. **Curriculum:** Scraped from roadmap.sh, freeCodeCamp, The Odin Project, and other sources. Ingested into a unified curriculum model. Extensible to add more sources later.
 3. **UI:** Dashboard for overview + three-panel workspace (file tree, code editor, chat) for learning sessions.
 4. **Project files:** On disk. Real filesystem, real git, real pip. Portable and Cognitive1-readable.
 
