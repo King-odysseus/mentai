@@ -28,6 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
       git_level: "beginner",
       preferred_backend: formData.get("preferred_backend") || null,
       preferred_frontend: formData.get("preferred_frontend") || null,
+      preferred_database: formData.get("preferred_database") || null,
       learning_goal: formData.get("learning_goal") || null,
       time_per_week: formData.get("time_per_week") || null,
       onboarding_complete: true,

@@ -13,7 +13,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.project import LearningProject
-from app.models.concept import ConceptExposure, Concept, DesignPattern
+from app.models.concept import ConceptExposure, DesignPattern
 from app.config import settings
 
 logger = logging.getLogger(__name__)
@@ -95,27 +95,20 @@ def _list_relative_files(directory: Path) -> list[str]:
 async def _compare_concepts(
     db: AsyncSession, a_id: int, b_id: int
 ) -> list[dict]:
-    """Side-by-side concept mastery comparison."""
-    # Get all concept exposures for both projects with concept titles
+    """Side-by-side concept mastery comparison using string-based concept titles."""
+    # Get all concept exposures for both projects (no join needed — string-based)
     a_result = await db.execute(
-        select(ConceptExposure, Concept.title)
-        .join(Concept, ConceptExposure.concept_id == Concept.id)
+        select(ConceptExposure)
         .where(ConceptExposure.project_id == a_id)
     )
     b_result = await db.execute(
-        select(ConceptExposure, Concept.title)
-        .join(Concept, ConceptExposure.concept_id == Concept.id)
+        select(ConceptExposure)
         .where(ConceptExposure.project_id == b_id)
     )
 
     # Build dicts: concept_title -> mastery
-    a_mastery = {}
-    for exp, title in a_result.all():
-        a_mastery[title] = exp.mastery
-
-    b_mastery = {}
-    for exp, title in b_result.all():
-        b_mastery[title] = exp.mastery
+    a_mastery = {e.concept_title: e.mastery for e in a_result.scalars().all()}
+    b_mastery = {e.concept_title: e.mastery for e in b_result.scalars().all()}
 
     # Merge all concept titles
     all_concepts = sorted(set(a_mastery.keys()) | set(b_mastery.keys()))

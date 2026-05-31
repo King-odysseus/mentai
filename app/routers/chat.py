@@ -1,6 +1,6 @@
 """WebSocket chat router — AI tutor streaming, onboarding, and teach cycles."""
 
-import json
+import json as _json
 import logging
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
@@ -11,11 +11,27 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-# ---------------------------------------------------------------------------
-# Helper: load project context for a given project_id
-# ---------------------------------------------------------------------------
+def _parse_curriculum(learning_path: str | None) -> list[dict] | None:
+    """Parse learning_path JSON into a flat curriculum_context list for the tutor."""
+    if not learning_path:
+        return None
+    try:
+        path_data = _json.loads(learning_path)
+        ctx = []
+        for mod in path_data:
+            for c in mod.get("concepts", []):
+                ctx.append({
+                    "title": c.get("title", ""),
+                    "description": c.get("description", ""),
+                    "module_title": mod.get("title", ""),
+                })
+        return ctx if ctx else None
+    except Exception:
+        return None
+
+
 async def _load_project_context(project_id: int) -> tuple:
-    """Load project, curriculum, and mastery context from DB. Returns 3-tuple."""
+    """Load project context, mastery, and learning path from DB."""
     from app.storage.db import async_session
     from app.services import concept_tracker as ct
     from app.models.project import LearningProject
@@ -41,9 +57,6 @@ async def _load_project_context(project_id: int) -> tuple:
     return project_context, mastery_context, learning_path
 
 
-# ---------------------------------------------------------------------------
-# Main chat WebSocket
-# ---------------------------------------------------------------------------
 @router.websocket("/chat/{project_id}")
 async def tutor_chat(websocket: WebSocket, project_id: int):
     await websocket.accept()
@@ -57,14 +70,16 @@ async def tutor_chat(websocket: WebSocket, project_id: int):
         while True:
             raw = await websocket.receive_text()
             try:
-                data = json.loads(raw)
-            except json.JSONDecodeError:
+                data = _json.loads(raw)
+            except _json.JSONDecodeError:
                 await websocket.send_json({"type": "error", "content": "Invalid JSON."})
                 continue
 
             msg_type = data.get("type", "message")
 
-            # Session events
+            # ------------------------------------------------------------------
+            # Session lifecycle
+            # ------------------------------------------------------------------
             if msg_type == "session_start":
                 from app.storage.db import async_session
                 from app.services.session_manager import start_session
@@ -96,7 +111,9 @@ async def tutor_chat(websocket: WebSocket, project_id: int):
                 await websocket.send_json({"type": "session_ended"})
                 continue
 
-            # Normal chat message
+            # ------------------------------------------------------------------
+            # Normal chat message — tutor responds with full context
+            # ------------------------------------------------------------------
             if msg_type == "message":
                 content = data.get("content", "").strip()
                 if not content:
@@ -115,6 +132,7 @@ async def tutor_chat(websocket: WebSocket, project_id: int):
                     "specialization": specialization,
                 })
 
+                curriculum_context = _parse_curriculum(learning_path)
                 history.append({"role": "user", "content": content})
                 full_response = ""
 
@@ -123,7 +141,7 @@ async def tutor_chat(websocket: WebSocket, project_id: int):
                     user_message=content,
                     conversation_history=history,
                     project_context=project_context,
-                    curriculum_context=None,
+                    curriculum_context=curriculum_context,
                     mastery_context=mastery_context,
                     session_mode=session_mode,
                 ):
@@ -145,7 +163,9 @@ async def tutor_chat(websocket: WebSocket, project_id: int):
                 except Exception:
                     pass
 
-            # Teach cycle — AI teaches a concept then gives a challenge
+            # ------------------------------------------------------------------
+            # Teach cycle: AI teaches a concept, gives a challenge, reviews code
+            # ------------------------------------------------------------------
             elif msg_type == "teach_concept":
                 concept = data.get("concept", "")
                 module_title = data.get("module_title", "")
@@ -157,7 +177,8 @@ async def tutor_chat(websocket: WebSocket, project_id: int):
                 project_context, mastery_context, learning_path = await _load_project_context(project_id)
 
                 from app.services.tutor_orchestrator import orchestrator
-                from app.services.ai_tutor import AITutor
+
+                curriculum_context = _parse_curriculum(learning_path)
 
                 # Phase 1: Teach
                 await websocket.send_json({"type": "cycle_phase", "phase": "teach"})
@@ -178,6 +199,8 @@ async def tutor_chat(websocket: WebSocket, project_id: int):
                     user_message=teach_prompt,
                     conversation_history=history[-10:],
                     project_context=project_context,
+                    curriculum_context=curriculum_context,
+                    mastery_context=mastery_context,
                     session_mode=session_mode,
                 ):
                     full_response += delta
@@ -186,7 +209,7 @@ async def tutor_chat(websocket: WebSocket, project_id: int):
                 history.append({"role": "assistant", "content": full_response})
                 await websocket.send_json({"type": "done"})
 
-                # Phase 2: Challenge (embedded in the teach response after NOW_YOUR_TURN)
+                # Phase 2: Challenge
                 challenge = ""
                 if "NOW_YOUR_TURN" in full_response:
                     parts = full_response.split("NOW_YOUR_TURN", 1)
@@ -199,7 +222,9 @@ async def tutor_chat(websocket: WebSocket, project_id: int):
                     "prompt": challenge or "Write code to practice this concept in the editor, then submit for review.",
                 })
 
-            # Code review — AI reviews the learner's code
+            # ------------------------------------------------------------------
+            # Code review / submit code from teach cycle
+            # ------------------------------------------------------------------
             elif msg_type == "code_review" or msg_type == "submit_code":
                 code = data.get("code", "")
                 file_path = data.get("file_path", "unknown")
@@ -211,6 +236,7 @@ async def tutor_chat(websocket: WebSocket, project_id: int):
 
                 session_mode = data.get("session_mode", session_mode)
                 project_context, mastery_context, learning_path = await _load_project_context(project_id)
+                curriculum_context = _parse_curriculum(learning_path)
 
                 from app.services.tutor_orchestrator import orchestrator
 
@@ -247,6 +273,8 @@ async def tutor_chat(websocket: WebSocket, project_id: int):
                     user_message=review_prompt,
                     conversation_history=history[-10:],
                     project_context=project_context,
+                    curriculum_context=curriculum_context,
+                    mastery_context=mastery_context,
                     session_mode=session_mode,
                 ):
                     full_response += delta

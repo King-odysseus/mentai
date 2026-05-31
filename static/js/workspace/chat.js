@@ -79,6 +79,7 @@ const Chat = {
         console.log("Session ended");
         break;
 
+      case "cycle_complete":
       case "concept_exposed":
         this.showConceptToast(data.concept, data.mastery);
         break;
@@ -146,11 +147,37 @@ const Chat = {
   },
 
   /**
-   * Show a brief toast when a concept was detected.
+   * Show a real toast notification when a concept is mastered/reviewed.
    */
   showConceptToast(concept, mastery) {
-    // Lightweight notification — could be a toast, but for now just log
-    console.log(`Concept exposed: ${concept} (${mastery})`);
+    // Remove existing toasts
+    document.querySelectorAll(".concept-toast").forEach((t) => t.remove());
+
+    const toast = document.createElement("div");
+    toast.className = `concept-toast toast-${mastery}`;
+    const masteryIcons = {
+      introduced: "🌱",
+      practiced: "🌿",
+      confident: "🪴",
+      mastered: "🌳",
+    };
+    toast.innerHTML = `
+      <span class="toast-icon">${masteryIcons[mastery] || "📚"}</span>
+      <div class="toast-body">
+        <div class="toast-title">${escapeHtml(concept)}</div>
+        <div class="toast-meta">Mastery: ${mastery}</div>
+      </div>
+    `;
+    document.body.appendChild(toast);
+
+    // Animate in
+    requestAnimationFrame(() => toast.classList.add("toast-visible"));
+
+    // Auto dismiss after 3s
+    setTimeout(() => {
+      toast.classList.remove("toast-visible");
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
   },
 
   /**
