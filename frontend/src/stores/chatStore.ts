@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { ChatMessage, SpecialistInfo } from "../types/chat";
+import type { ChatMessage, SpecialistInfo, WsOutgoing } from "../types/chat";
 
 interface ChatState {
   messages: ChatMessage[];
@@ -8,6 +8,8 @@ interface ChatState {
   sessionId: number | null;
   specialist: SpecialistInfo | null;
   voiceEnabled: boolean;
+  /** WebSocket send function — set by useWebSocket, read by any component */
+  wsSend: ((data: WsOutgoing) => void) | null;
 
   addMessage: (msg: ChatMessage) => void;
   appendDelta: (text: string) => void;
@@ -16,6 +18,7 @@ interface ChatState {
   setSessionId: (id: number) => void;
   setSpecialist: (name: string, specialization: string) => void;
   setVoiceEnabled: (enabled: boolean) => void;
+  setWsSend: (send: ((data: WsOutgoing) => void) | null) => void;
   clearMessages: () => void;
 }
 
@@ -31,6 +34,7 @@ export const useChatStore = create<ChatState>((set) => ({
   sessionId: null,
   specialist: null,
   voiceEnabled: false,
+  wsSend: null,
 
   addMessage: (msg) =>
     set((s) => ({
@@ -84,5 +88,7 @@ export const useChatStore = create<ChatState>((set) => ({
 
   setVoiceEnabled: (enabled) => set({ voiceEnabled: enabled }),
 
-  clearMessages: () => set({ messages: [], isStreaming: false }),
+  setWsSend: (send) => set({ wsSend: send }),
+
+  clearMessages: () => set({ messages: [], isStreaming: false, wsSend: null }),
 }));

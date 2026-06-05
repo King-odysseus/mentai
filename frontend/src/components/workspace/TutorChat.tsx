@@ -3,10 +3,12 @@ import { useWebSocket } from "../../hooks/useWebSocket";
 import { useChatStore } from "../../stores/chatStore";
 import SpecialistBadge from "./SpecialistBadge";
 import SessionControls from "./SessionControls";
+import VoiceToggle from "./VoiceToggle";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
 import ConceptToast from "./ConceptToast";
 import EditorCollapseToggle from "./EditorCollapseToggle";
+import { useVoice } from "../../hooks/useVoice";
 import styles from "./TutorChat.module.css";
 
 interface TutorChatProps {
@@ -18,6 +20,8 @@ export default function TutorChat({ projectId }: TutorChatProps) {
   const messages = useChatStore((s) => s.messages);
   const addMessage = useChatStore((s) => s.addMessage);
   const setSessionMode = useChatStore((s) => s.setSessionMode);
+
+  const { listening, speaking } = useVoice();
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -79,6 +83,7 @@ export default function TutorChat({ projectId }: TutorChatProps) {
             className={`${styles.status} ${isConnected ? styles.online : styles.offline}`}
             title={isConnected ? "Connected" : "Reconnecting…"}
           />
+          <VoiceToggle />
           <SessionControls onModeChange={handleModeChange} />
           <EditorCollapseToggle />
         </div>
@@ -98,6 +103,14 @@ export default function TutorChat({ projectId }: TutorChatProps) {
       </div>
 
       <ChatInput onSend={handleSend} />
+
+      {(listening || speaking) && (
+        <div className={styles.voiceStatus}>
+          {listening && "🎤 Listening…"}
+          {speaking && "🔊 Tutor speaking…"}
+        </div>
+      )}
+
       <ConceptToast />
     </div>
   );

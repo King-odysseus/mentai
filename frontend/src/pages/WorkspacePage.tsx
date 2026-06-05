@@ -1,6 +1,7 @@
 /** Workspace page — three-panel IDE.
  *  Phase 5: file tree + code editor + output panel.
- *  Right panel (AI tutor chat) is wired in Phase 6. */
+ *  Right panel (AI tutor chat) is wired in Phase 6.
+ *  Phase 7: VoiceToggle in chat header + LearningPathPanel in left panel. */
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useEditorActions } from "../hooks/useEditorActions";
@@ -9,6 +10,7 @@ import { useUIStore } from "../stores/uiStore";
 import {
   WorkspaceLayout,
   FileTree,
+  LearningPathPanel,
   CodeEditor,
   EditorToolbar,
   OutputPanel,
@@ -40,7 +42,12 @@ export default function WorkspacePage() {
 
   return (
     <WorkspaceLayout
-      leftPanel={<FileTree projectId={id} />}
+      leftPanel={
+        <div className={styles.leftPanel}>
+          <FileTree projectId={id} />
+          <LearningPathPanel projectId={id} />
+        </div>
+      }
       centerPanel={
         <div className={styles.center}>
           <EditorToolbar actions={actions} />

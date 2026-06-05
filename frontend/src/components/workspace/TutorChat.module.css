@@ -174,3 +174,55 @@
   opacity: 0.4;
   cursor: not-allowed;
 }
+
+/* VoiceToggle */
+.voiceBtn {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: var(--radius-round);
+  background: var(--glass-surface);
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+  line-height: 1;
+}
+.voiceBtn:hover {
+  background: var(--glass-surface-hover);
+}
+.voiceOff {
+  opacity: 0.5;
+}
+.voiceOn {
+  opacity: 1;
+  box-shadow: 0 0 0 2px var(--color-accent);
+}
+.voiceListening {
+  opacity: 1;
+  box-shadow: 0 0 0 2px var(--color-primary);
+  animation: voicePulse 1.2s ease-in-out infinite;
+}
+.voiceSpeaking {
+  opacity: 1;
+  box-shadow: 0 0 0 2px var(--color-warning);
+}
+@keyframes voicePulse {
+  50% { box-shadow: 0 0 0 4px var(--color-primary); }
+}
+
+/* Voice status bar */
+.voiceStatus {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px var(--space-sm);
+  font-size: var(--font-size-xs);
+  opacity: 0.8;
+  border-top: 1px solid var(--glass-border);
+  flex-shrink: 0;
+  min-height: 22px;
+}

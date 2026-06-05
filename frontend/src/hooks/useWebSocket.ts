@@ -15,6 +15,7 @@ export function useWebSocket(projectId: number): UseWebSocketReturn {
   const setSpecialist = useChatStore((s) => s.setSpecialist);
   const setSessionId = useChatStore((s) => s.setSessionId);
   const setSessionMode = useChatStore((s) => s.setSessionMode);
+  const setWsSend = useChatStore((s) => s.setWsSend);
 
   const wsRef = useRef<WebSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
@@ -28,6 +29,12 @@ export function useWebSocket(projectId: number): UseWebSocketReturn {
     }
   }, []);
 
+  // Store send in chatStore so LearningPathPanel and other components can access it
+  useEffect(() => {
+    setWsSend(send);
+    return () => setWsSend(null);
+  }, [send, setWsSend]);
+
   const connect = useCallback(() => {
     const protocol = location.protocol === "https:" ? "wss:" : "ws:";
     const url = `${protocol}//${location.host}/ws/chat/${projectId}`;
@@ -38,6 +45,7 @@ export function useWebSocket(projectId: number): UseWebSocketReturn {
       setIsConnected(true);
       setIsReconnecting(false);
       setReconnectAttempt(0);
+      setWsSend(send);
       send({ type: "session_start", mode: "micro", available_minutes: 10 });
     };
 
@@ -50,6 +58,18 @@ export function useWebSocket(projectId: number): UseWebSocketReturn {
             break;
           case "done":
             finishStreaming();
+            // Fire tutor-response-complete so useVoice TTS can speak the response
+            {
+              const msgs = useChatStore.getState().messages;
+              const lastTutorMsg = [...msgs].reverse().find((m) => m.role === "tutor");
+              if (lastTutorMsg) {
+                window.dispatchEvent(
+                  new CustomEvent("tutor-response-complete", {
+                    detail: { text: lastTutorMsg.content },
+                  })
+                );
+              }
+            }
             break;
           case "error":
             // Chat store could handle error display

@@ -1,6 +1,7 @@
 export { default as WorkspaceLayout } from "./WorkspaceLayout";
 export { default as FileTree } from "./FileTree";
 export { default as FileTreeItem } from "./FileTreeItem";
+export { default as LearningPathPanel } from "./LearningPathPanel";
 export { default as CodeEditor } from "./CodeEditor";
 export { default as EditorToolbar } from "./EditorToolbar";
 export { default as EditorCollapseToggle } from "./EditorCollapseToggle";
@@ -12,4 +13,5 @@ export { default as ChatMessage } from "./ChatMessage";
 export { default as ChatInput } from "./ChatInput";
 export { default as SessionControls } from "./SessionControls";
 export { default as SpecialistBadge } from "./SpecialistBadge";
+export { default as VoiceToggle } from "./VoiceToggle";
 export { default as ConceptToast } from "./ConceptToast";
