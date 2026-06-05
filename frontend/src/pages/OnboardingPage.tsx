@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
+import { useNavigate, Navigate } from "react-router-dom";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { profileApi } from "../services/profileApi";
 import { queryKeys } from "../services/queryKeys";
-import { useQueryClient } from "@tanstack/react-query";
-import { Card, Input, Select, Button } from "../components/shared";
+import { Card, Input, Select, Button, Spinner } from "../components/shared";
 import type { ProfileCreate, ExperienceLevel } from "../types/profile";
 import styles from "./OnboardingPage.module.css";
 
@@ -93,8 +92,25 @@ const DEFAULTS: FormData = {
 export default function OnboardingPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+
+  // Guard: if the user is already onboarded, redirect to dashboard.
+  const { data: existing, isLoading: checkingProfile } = useQuery({
+    queryKey: queryKeys.profile.current,
+    queryFn: profileApi.get,
+    retry: false,
+    staleTime: 60_000,
+  });
+
   const [form, setForm] = useState<FormData>(DEFAULTS);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  if (checkingProfile) {
+    return <Spinner size="lg" label="Loading..." />;
+  }
+
+  if (existing?.onboarding_complete) {
+    return <Navigate to="/" replace />;
+  }
 
   const handleChange = (field: keyof FormData, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }) as FormData);

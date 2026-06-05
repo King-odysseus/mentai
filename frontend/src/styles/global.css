@@ -94,6 +94,14 @@ label {
   min-height: calc(100vh - 60px);
 }
 
+/* Full-center layout for error / guard screens */
+.full-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 60px);
+}
+
 /* --- Animations --- */
 @keyframes fadeIn {
   from { opacity: 0; }
