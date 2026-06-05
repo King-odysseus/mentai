@@ -1,12 +1,10 @@
 """MentAi FastAPI application entry point."""
 
 from contextlib import asynccontextmanager
-from pathlib import Path
 
-from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi import FastAPI
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
 
 from app.config import settings
 
@@ -36,52 +34,19 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# Static files served directly by FastAPI (if any remain outside the SPA)
 static_dir = settings.static_dir
 static_dir.mkdir(exist_ok=True)
 app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
 
-templates = Jinja2Templates(directory=str(settings.templates_dir))
-
 
 # ---------------------------------------------------------------------------
-# Page routes
+# SPA assets
 # ---------------------------------------------------------------------------
-@app.get("/", response_class=HTMLResponse)
-async def dashboard(request: Request):
-    """Dashboard — or redirect to onboarding if no profile exists."""
-    from app.storage.db import async_session
-    from app.models.user_profile import UserProfile
-    from sqlalchemy import select
-
-    async with async_session() as db:
-        result = await db.execute(select(UserProfile).limit(1))
-        profile = result.scalars().first()
-
-    if not profile or not profile.onboarding_complete:
-        return RedirectResponse(url="/onboarding")
-
-    return templates.TemplateResponse(
-        "dashboard.html",
-        {"request": request, "learner_name": profile.display_name},
-    )
-
-
-@app.get("/onboarding", response_class=HTMLResponse)
-async def onboarding(request: Request):
-    """Account creation — name, experience, stack preferences."""
-    return templates.TemplateResponse(
-        "onboarding.html",
-        {"request": request},
-    )
-
-
-@app.get("/workspace/{project_id}", response_class=HTMLResponse)
-async def workspace(request: Request, project_id: int):
-    """Three-panel learning workspace."""
-    return templates.TemplateResponse(
-        "workspace.html",
-        {"request": request, "project_id": project_id},
-    )
+spa_dir = static_dir / "spa"
+assets_dir = spa_dir / "assets"
+if assets_dir.exists():
+    app.mount("/assets", StaticFiles(directory=str(assets_dir)), name="spa_assets")
 
 
 # ---------------------------------------------------------------------------
@@ -109,4 +74,33 @@ async def health():
         "status": "ok",
         "app": settings.app_name,
         "version": settings.app_version,
+    }
+
+
+# ---------------------------------------------------------------------------
+# Favicon — served before the catch-all so browsers pick it up correctly
+# ---------------------------------------------------------------------------
+@app.get("/favicon.svg")
+async def favicon():
+    favicon_path = spa_dir / "favicon.svg"
+    if favicon_path.exists():
+        return FileResponse(str(favicon_path))
+    return None
+
+
+# ---------------------------------------------------------------------------
+# SPA catch-all — must be registered LAST so API/WS/static routes match
+# first.  All client-side routes (/, /onboarding, /workspace/:id, etc.) are
+# served by the React SPA via history.pushState.
+# ---------------------------------------------------------------------------
+@app.get("/{full_path:path}")
+async def serve_spa(full_path: str):
+    """Serve the React SPA for all non-API, non-static routes."""
+    index_html = spa_dir / "index.html"
+    if index_html.exists():
+        return FileResponse(str(index_html))
+    # Fallback for development without a build
+    return {
+        "message": "SPA not built. Run: cd frontend && npm run build",
+        "status": "no_spa",
     }
