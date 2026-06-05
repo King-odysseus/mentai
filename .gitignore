@@ -40,3 +40,7 @@ Thumbs.db
 
 # Logs
 *.log
+
+# React SPA (frontend)
+frontend/node_modules/
+static/spa/

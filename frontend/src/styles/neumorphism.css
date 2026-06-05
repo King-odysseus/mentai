@@ -1,0 +1,250 @@
+/* ==========================================================================
+   Neumorphism Utility Classes
+   Cards, buttons, inputs — the primary design language
+   ========================================================================== */
+
+/* --- Card --- */
+.neo-card {
+  background: var(--neo-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--neo-raised);
+  padding: var(--space-lg);
+  transition: box-shadow var(--transition), transform var(--transition);
+}
+.neo-card:hover {
+  box-shadow: var(--neo-raised-lg);
+  transform: translateY(-2px);
+}
+.neo-card-inset {
+  background: var(--neo-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--neo-inset);
+  padding: var(--space-lg);
+}
+
+/* --- Button --- */
+.neo-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  padding: 10px 22px;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  font-family: var(--font-sans);
+  color: var(--color-primary);
+  background: var(--neo-surface);
+  border: none;
+  border-radius: var(--radius-md);
+  box-shadow: var(--neo-raised-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.neo-btn:hover {
+  box-shadow: var(--neo-raised);
+  transform: translateY(-1px);
+}
+.neo-btn:active {
+  box-shadow: var(--neo-inset-sm);
+  transform: translateY(0);
+}
+.neo-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.neo-btn-primary {
+  color: #fff;
+  background: var(--color-primary);
+  box-shadow: 3px 3px 8px var(--neo-shadow-dark),
+    -3px -3px 8px var(--neo-shadow-light);
+}
+.neo-btn-primary:hover {
+  background: var(--color-primary-hover);
+  box-shadow: 5px 5px 14px var(--neo-shadow-dark),
+    -5px -5px 14px var(--neo-shadow-light), 0 0 24px var(--color-primary-glow);
+}
+.neo-btn-primary:active {
+  box-shadow: var(--neo-inset-sm);
+  background: var(--color-primary-hover);
+}
+
+.neo-btn-sm {
+  padding: 6px 14px;
+  font-size: var(--font-size-xs);
+  border-radius: var(--radius-sm);
+}
+.neo-btn-lg {
+  padding: 14px 30px;
+  font-size: var(--font-size-base);
+  border-radius: var(--radius-md);
+}
+
+/* --- Icon Button --- */
+.neo-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--neo-surface);
+  border: none;
+  border-radius: var(--radius-round);
+  box-shadow: var(--neo-raised-sm);
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--color-primary);
+  transition: all var(--transition-fast);
+}
+.neo-btn-icon:hover {
+  box-shadow: var(--neo-raised);
+  transform: scale(1.05);
+}
+.neo-btn-icon:active {
+  box-shadow: var(--neo-inset-sm);
+  transform: scale(0.97);
+}
+
+/* --- Input --- */
+.neo-input {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: var(--font-size-sm);
+  font-family: var(--font-sans);
+  color: inherit;
+  background: var(--neo-surface);
+  border: none;
+  border-radius: var(--radius-md);
+  box-shadow: var(--neo-inset-sm);
+  transition: all var(--transition-fast);
+}
+.neo-input::placeholder {
+  color: var(--neo-shadow-dark);
+  opacity: 0.6;
+}
+.neo-input:focus {
+  outline: none;
+  box-shadow: var(--neo-inset-sm), 0 0 0 2px var(--color-primary);
+}
+.neo-input:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* --- Select --- */
+.neo-select {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: var(--font-size-sm);
+  font-family: var(--font-sans);
+  color: inherit;
+  background: var(--neo-surface);
+  border: none;
+  border-radius: var(--radius-md);
+  box-shadow: var(--neo-inset-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' fill='none' stroke='%23666' stroke-width='2'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+.neo-select:focus {
+  outline: none;
+  box-shadow: var(--neo-inset-sm), 0 0 0 2px var(--color-primary);
+}
+
+/* --- Toggle / Switch --- */
+.neo-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+}
+.neo-toggle-track {
+  position: relative;
+  width: 48px;
+  height: 26px;
+  background: var(--neo-surface);
+  border-radius: 13px;
+  box-shadow: var(--neo-inset-sm);
+  transition: all var(--transition-fast);
+}
+.neo-toggle-track.active {
+  background: var(--color-primary);
+  box-shadow: var(--neo-inset-sm), 0 0 12px var(--color-primary-glow);
+}
+.neo-toggle-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-round);
+  background: var(--neo-surface);
+  box-shadow: var(--neo-raised-sm);
+  transition: all var(--transition-fast);
+}
+.neo-toggle-track.active .neo-toggle-thumb {
+  left: 25px;
+}
+
+/* --- Stat Card (special neumorphic card with centered value) --- */
+.neo-stat {
+  background: var(--neo-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--neo-raised);
+  padding: var(--space-lg);
+  text-align: center;
+  transition: all var(--transition);
+}
+.neo-stat:hover {
+  box-shadow: var(--neo-raised-lg);
+  transform: translateY(-2px);
+}
+.neo-stat-value {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--color-primary);
+}
+.neo-stat-label {
+  font-size: var(--font-size-sm);
+  color: var(--neo-shadow-dark);
+  margin-top: var(--space-xs);
+  font-weight: 500;
+}
+
+/* --- Progress Bar --- */
+.neo-progress {
+  width: 100%;
+  height: 10px;
+  background: var(--neo-surface);
+  border-radius: 5px;
+  box-shadow: var(--neo-inset-sm);
+  overflow: hidden;
+}
+.neo-progress-fill {
+  height: 100%;
+  border-radius: 5px;
+  background: var(--color-primary);
+  box-shadow: 0 0 8px var(--color-primary-glow);
+  transition: width var(--transition-slow);
+}
+
+/* --- Badge --- */
+.neo-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  background: var(--neo-surface);
+  box-shadow: var(--neo-raised-sm);
+}
