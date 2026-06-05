@@ -4,11 +4,11 @@ export interface DashboardStats {
   total_projects: number;
   total_concepts: number;
   total_sessions: number;
-  total_learning_minutes: number;
   mastery_breakdown: Record<string, number>;
   recent_projects: {
     id: number;
     name: string;
+    tech_stack: string | null;
     status: string;
     updated_at: string;
   }[];
@@ -16,6 +16,7 @@ export interface DashboardStats {
 
 export interface DailySession {
   date: string; // YYYY-MM-DD
+  count: number;
   minutes: number;
 }
 
@@ -28,8 +29,8 @@ export interface DashboardProgress {
   daily_sessions: DailySession[];
   mastery_distribution: Record<string, number>;
   recently_mastered: RecentlyMasteredItem[];
-  total_learning_time: number;
-  current_streak: number;
+  total_learning_minutes: number;
+  total_learning_hours: number;
 }
 
 /** Mastery display helpers */

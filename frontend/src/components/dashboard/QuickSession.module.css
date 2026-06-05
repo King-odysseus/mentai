@@ -1,0 +1,76 @@
+.title {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  margin-bottom: var(--space-md);
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.btn {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "icon label"
+    "icon time"
+    "desc desc";
+  gap: 2px var(--space-sm);
+  padding: var(--space-md);
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--neo-surface);
+  box-shadow: var(--neo-raised-sm);
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-sans);
+  color: inherit;
+  transition: all var(--transition-fast);
+}
+.btn:hover {
+  box-shadow: var(--neo-raised);
+  transform: translateY(-1px);
+}
+.btn:active {
+  box-shadow: var(--neo-inset-sm);
+  transform: translateY(0);
+}
+
+.icon {
+  grid-area: icon;
+  font-size: 1.4rem;
+  align-self: center;
+}
+
+.label {
+  grid-area: label;
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+}
+
+.time {
+  grid-area: time;
+  font-size: var(--font-size-xs);
+  opacity: 0.5;
+}
+
+.desc {
+  grid-area: desc;
+  font-size: var(--font-size-xs);
+  opacity: 0.4;
+  margin-top: var(--space-xs);
+}
+
+.deep .icon {
+  /* subtle differentiation */
+}
+
+.hint {
+  font-size: var(--font-size-xs);
+  opacity: 0.35;
+  text-align: center;
+  margin-top: var(--space-md);
+}

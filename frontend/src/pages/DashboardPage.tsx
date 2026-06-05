@@ -1,43 +1,78 @@
-/** Dashboard page — overview of all learning progress. Stub for Phase 3-4 implementation. */
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { profileApi } from "../services/profileApi";
+import { queryKeys } from "../services/queryKeys";
+import { Card, EmptyState } from "../components/shared";
+import { StatsRow, ProjectList, NewProjectModal, QuickSession } from "../components/dashboard";
+import styles from "./DashboardPage.module.css";
 
 export default function DashboardPage() {
+  const navigate = useNavigate();
+  const [newProjectOpen, setNewProjectOpen] = useState(false);
+  const [compareIds, setCompareIds] = useState<number[]>([]);
+
+  const { data: profile } = useQuery({
+    queryKey: queryKeys.profile.current,
+    queryFn: profileApi.get,
+  });
+
+  function handleToggleCompare(id: number) {
+    setCompareIds((prev) => {
+      if (prev.includes(id)) return prev.filter((x) => x !== id);
+      if (prev.length >= 2) return [prev[1], id];
+      return [...prev, id];
+    });
+  }
+
+  function handleProjectCreated(id: number) {
+    setNewProjectOpen(false);
+    navigate(`/workspace/${id}`);
+  }
+
   return (
-    <div className="dashboard-page" style={{ maxWidth: 1100, margin: "0 auto", padding: "var(--space-2xl) var(--space-xl)" }}>
-      <header style={{ marginBottom: "var(--space-2xl)" }}>
-        <h1 style={{ fontSize: "var(--font-size-2xl)", fontWeight: 700 }}>
-          Welcome back
+    <div className={styles.page}>
+      {/* Header */}
+      <header className={styles.header}>
+        <h1 className={styles.title}>
+          Welcome back{profile?.display_name ? `, ${profile.display_name}` : ""}
         </h1>
-        <p style={{ opacity: 0.55, marginTop: "var(--space-xs)" }}>
+        <p className={styles.subtitle}>
           Your full-stack journey, one project at a time.
         </p>
       </header>
 
-      <div className="dash-grid" style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-        gap: "var(--space-lg)",
-      }}>
-        <div className="neo-card">
-          <div className="card-header" style={{ marginBottom: "var(--space-md)" }}>
-            <h2 style={{ fontSize: "var(--font-size-lg)" }}>Your Projects</h2>
-          </div>
-          <p className="empty-state">Project list coming in Phase 3.</p>
-        </div>
+      {/* Stats Row */}
+      <StatsRow />
 
-        <div className="neo-card">
-          <div className="card-header" style={{ marginBottom: "var(--space-md)" }}>
-            <h2 style={{ fontSize: "var(--font-size-lg)" }}>Quick Session</h2>
-          </div>
-          <p className="empty-state">Session buttons coming in Phase 3.</p>
-        </div>
-
-        <div className="neo-card">
-          <div className="card-header" style={{ marginBottom: "var(--space-md)" }}>
-            <h2 style={{ fontSize: "var(--font-size-lg)" }}>Concept Mastery</h2>
-          </div>
-          <p className="empty-state">Mastery bars coming in Phase 4.</p>
-        </div>
+      {/* Main Grid: Projects + Quick Session + Placeholders */}
+      <div className={styles.grid}>
+        <ProjectList
+          onNewProject={() => setNewProjectOpen(true)}
+          onToggleCompare={handleToggleCompare}
+          selectedForCompare={compareIds}
+        />
+        <QuickSession />
       </div>
+
+      {/* Second Row — Phase 4 widgets (stubs for now) */}
+      <div className={styles.grid}>
+        <Card>
+          <h2 className={styles.cardTitle}>Concept Mastery</h2>
+          <EmptyState message="Mastery bars and charts coming in Phase 4." />
+        </Card>
+        <Card>
+          <h2 className={styles.cardTitle}>Today's Goals</h2>
+          <EmptyState message="Goals widget coming in Phase 4." />
+        </Card>
+      </div>
+
+      {/* Modals */}
+      <NewProjectModal
+        open={newProjectOpen}
+        onClose={() => setNewProjectOpen(false)}
+        onCreated={handleProjectCreated}
+      />
     </div>
   );
 }

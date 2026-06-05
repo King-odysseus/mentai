@@ -1,0 +1,89 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+}
+
+.title {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px var(--space-md);
+  border-radius: var(--radius-md);
+  box-shadow: var(--neo-raised-sm);
+  background: var(--neo-surface);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.item:hover {
+  box-shadow: var(--neo-raised);
+  transform: translateX(2px);
+}
+.item.selected {
+  box-shadow: 0 0 0 2px var(--color-primary), var(--neo-raised-sm);
+}
+
+.itemInfo {
+  min-width: 0;
+  flex: 1;
+}
+
+.itemName {
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.itemStack {
+  font-size: var(--font-size-xs);
+  opacity: 0.45;
+  margin-top: 2px;
+}
+
+.itemRight {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-shrink: 0;
+  margin-left: var(--space-md);
+}
+
+.compareBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--neo-surface);
+  box-shadow: var(--neo-raised-sm);
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: all var(--transition-fast);
+}
+.compareBtn:hover {
+  box-shadow: var(--neo-raised);
+  transform: scale(1.08);
+}
+
+.compareHint {
+  text-align: center;
+  font-size: var(--font-size-xs);
+  opacity: 0.35;
+  margin-top: var(--space-sm);
+}

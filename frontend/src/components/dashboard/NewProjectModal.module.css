@@ -1,0 +1,30 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.field label {
+  display: block;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  opacity: 0.7;
+  margin-bottom: var(--space-xs);
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-sm);
+  justify-content: flex-end;
+  margin-top: var(--space-sm);
+}
+
+.error {
+  padding: var(--space-sm) var(--space-md);
+  background: rgba(220, 38, 38, 0.08);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-sm);
+  color: var(--color-danger);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+}

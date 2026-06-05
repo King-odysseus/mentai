@@ -1,0 +1,30 @@
+.row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-lg);
+  margin-bottom: var(--space-2xl);
+}
+
+.stat {
+  text-align: center;
+  padding: var(--space-lg);
+}
+
+.value {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.label {
+  font-size: var(--font-size-sm);
+  opacity: 0.55;
+  margin-top: var(--space-xs);
+  font-weight: 500;
+}
+
+@media (max-width: 640px) {
+  .row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
