@@ -1,0 +1,36 @@
+/* Card — neumorphic + glassmorphic panels */
+
+.card {
+  border-radius: var(--radius-lg);
+  transition: box-shadow var(--transition), transform var(--transition), background var(--transition);
+}
+
+/* Neumorphic raised */
+.neo {
+  background: var(--neo-surface);
+  box-shadow: var(--neo-raised);
+}
+.neo.hover:hover {
+  box-shadow: var(--neo-raised-lg);
+  transform: translateY(-2px);
+}
+
+/* Neumorphic inset (depressed) */
+.neo-inset {
+  background: var(--neo-surface);
+  box-shadow: var(--neo-inset);
+}
+
+/* Glassmorphic */
+.glass {
+  background: var(--glass-surface);
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-glass);
+}
+.glass.hover:hover {
+  background: var(--glass-surface-hover);
+  border-color: var(--glass-border-hover);
+  box-shadow: var(--shadow-glass-lg);
+}

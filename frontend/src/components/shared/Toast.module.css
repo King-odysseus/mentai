@@ -1,0 +1,62 @@
+/* Toast notification tray */
+
+.tray {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--space-sm);
+  z-index: 10000;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--glass-surface);
+  backdrop-filter: var(--blur-lg);
+  -webkit-backdrop-filter: var(--blur-lg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-glass-lg);
+  max-width: 360px;
+  transform: translateY(120%);
+  opacity: 0;
+  transition: all var(--transition-slow);
+  pointer-events: auto;
+}
+
+.visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.body {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+}
+
+/* Mastery toast — special coloring */
+.mastery {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-glass-lg), 0 0 24px var(--color-primary-glow);
+}
+.mastery .body {
+  color: var(--color-primary);
+}
+
+/* Success */
+.success {
+  border-color: var(--color-accent);
+}
+.success .body {
+  color: var(--color-accent);
+}

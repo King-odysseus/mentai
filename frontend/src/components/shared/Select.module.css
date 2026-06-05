@@ -1,0 +1,66 @@
+/* Select */
+
+.wrapper {
+  width: 100%;
+  position: relative;
+}
+
+.select {
+  width: 100%;
+  padding: 12px 16px;
+  padding-right: 36px;
+  font-size: var(--font-size-sm);
+  font-family: var(--font-sans);
+  color: inherit;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' fill='none' stroke='%23666' stroke-width='2'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+
+.select:focus {
+  outline: none;
+}
+
+.select:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Neo */
+.neo {
+  background: var(--neo-surface);
+  box-shadow: var(--neo-inset-sm);
+}
+.neo:focus {
+  box-shadow: var(--neo-inset-sm), 0 0 0 2px var(--color-primary);
+}
+
+/* Glass */
+.glass {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+}
+.glass:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+/* Error */
+.error {
+  box-shadow: var(--neo-inset-sm), 0 0 0 2px var(--color-danger) !important;
+}
+
+.errorText {
+  display: block;
+  margin-top: var(--space-xs);
+  font-size: var(--font-size-xs);
+  color: var(--color-danger);
+  font-weight: 500;
+}

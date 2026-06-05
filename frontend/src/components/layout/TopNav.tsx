@@ -1,29 +1,32 @@
 import { Link } from "react-router-dom";
 import { useUIStore } from "../../stores/uiStore";
+import { Button } from "../shared";
+import styles from "./TopNav.module.css";
 
 export default function TopNav() {
   const theme = useUIStore((s) => s.theme);
   const toggleTheme = useUIStore((s) => s.toggleTheme);
 
   return (
-    <nav className="glass-topnav">
-      <Link to="/" className="topnav-brand">
+    <nav className={styles.nav}>
+      <Link to="/" className={styles.brand}>
         MentAi
       </Link>
-      <div style={{ display: "flex", gap: "var(--space-sm)", alignItems: "center" }}>
-        <Link to="/" className="neo-btn neo-btn-sm">
-          Dashboard
+      <div className={styles.links}>
+        <Link to="/">
+          <Button variant="neo-secondary" size="sm">
+            Dashboard
+          </Button>
         </Link>
-        <button
-          className="neo-btn-icon"
+        <Button
+          variant="icon"
+          size="sm"
           onClick={toggleTheme}
           title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
         >
           {theme === "dark" ? "☀️" : "🌙"}
-        </button>
+        </Button>
       </div>
     </nav>
   );
 }
-
-/* Inline style override for the brand link since it's a one-off */
