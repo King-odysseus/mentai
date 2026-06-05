@@ -1,0 +1,19 @@
+.toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--glass-surface);
+  color: inherit;
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  flex-shrink: 0;
+}
+.toggle:hover {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}

@@ -1,0 +1,105 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--glass-border);
+  min-height: 42px;
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.8;
+}
+
+.newBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--glass-surface);
+  color: var(--color-primary);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.newBtn:hover {
+  background: var(--color-primary-light);
+  transform: translateY(-1px);
+}
+
+.body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-sm);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 5px 10px;
+  font-size: var(--font-size-sm);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+.item:hover {
+  background: var(--glass-surface-hover);
+}
+.item.selected {
+  background: var(--color-primary-light);
+  border: 1px solid rgba(124, 58, 237, 0.2);
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.icon {
+  font-size: 0.875rem;
+  width: 18px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.name {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.deleteBtn {
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-danger);
+  font-size: 0.7rem;
+  line-height: 1;
+  padding: 2px 4px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+.item:hover .deleteBtn {
+  opacity: 0.6;
+}
+.deleteBtn:hover {
+  opacity: 1 !important;
+  background: rgba(220, 38, 38, 0.12);
+}
