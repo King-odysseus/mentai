@@ -63,13 +63,34 @@
   margin: 0.6rem 0;
   border-radius: var(--radius-md);
   overflow-x: auto;
+  background: #1e2128;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--glass-border);
 }
 
 .msg-body pre code {
   background: none;
   padding: 0;
   font-size: 0.78rem;
+  color: #e6e6e6;
 }
+
+/* Minimal highlight.js token theme (rehype-highlight output) */
+.msg-body .hljs-keyword,
+.msg-body .hljs-selector-tag,
+.msg-body .hljs-built_in { color: #c678dd; }
+.msg-body .hljs-string,
+.msg-body .hljs-attr { color: #98c379; }
+.msg-body .hljs-number,
+.msg-body .hljs-literal { color: #d19a66; }
+.msg-body .hljs-comment { color: #7f848e; font-style: italic; }
+.msg-body .hljs-function .hljs-title,
+.msg-body .hljs-title { color: #61afef; }
+.msg-body .hljs-params { color: #e6e6e6; }
+.msg-body .hljs-type,
+.msg-body .hljs-class .hljs-title { color: #e5c07b; }
+.msg-body .hljs-variable,
+.msg-body .hljs-name { color: #e06c75; }
 
 .msg-body blockquote {
   margin: 0.5rem 0;

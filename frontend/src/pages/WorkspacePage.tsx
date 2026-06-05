@@ -12,6 +12,7 @@ import {
   CodeEditor,
   EditorToolbar,
   OutputPanel,
+  TutorChat,
 } from "../components/workspace";
 import styles from "./WorkspacePage.module.css";
 
@@ -47,12 +48,7 @@ export default function WorkspacePage() {
           <OutputPanel />
         </div>
       }
-      rightPanel={
-        <div className={styles.chatPlaceholder}>
-          <h3 className={styles.chatTitle}>AI Tutor</h3>
-          <p className={styles.chatHint}>Chat with your tutor arrives in Phase 6.</p>
-        </div>
-      }
+      rightPanel={<TutorChat projectId={id} />}
     />
   );
 }
