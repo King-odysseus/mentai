@@ -3,13 +3,26 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { profileApi } from "../services/profileApi";
 import { queryKeys } from "../services/queryKeys";
-import { Card, EmptyState } from "../components/shared";
-import { StatsRow, ProjectList, NewProjectModal, QuickSession } from "../components/dashboard";
+import {
+  StatsRow,
+  ProjectList,
+  NewProjectModal,
+  QuickSession,
+  GoalsWidget,
+  PatternLibrary,
+  ConceptMasterySummary,
+  SessionChart,
+  MasteryDonut,
+  RecentlyMastered,
+  LearningPathWidget,
+  CompareModal,
+} from "../components/dashboard";
 import styles from "./DashboardPage.module.css";
 
 export default function DashboardPage() {
   const navigate = useNavigate();
   const [newProjectOpen, setNewProjectOpen] = useState(false);
+  const [compareOpen, setCompareOpen] = useState(false);
   const [compareIds, setCompareIds] = useState<number[]>([]);
 
   const { data: profile } = useQuery({
@@ -21,7 +34,9 @@ export default function DashboardPage() {
     setCompareIds((prev) => {
       if (prev.includes(id)) return prev.filter((x) => x !== id);
       if (prev.length >= 2) return [prev[1], id];
-      return [...prev, id];
+      const next = [...prev, id];
+      if (next.length === 2) setCompareOpen(true);
+      return next;
     });
   }
 
@@ -45,7 +60,7 @@ export default function DashboardPage() {
       {/* Stats Row */}
       <StatsRow />
 
-      {/* Main Grid: Projects + Quick Session + Placeholders */}
+      {/* Row 1: Projects + Quick Session */}
       <div className={styles.grid}>
         <ProjectList
           onNewProject={() => setNewProjectOpen(true)}
@@ -55,16 +70,25 @@ export default function DashboardPage() {
         <QuickSession />
       </div>
 
-      {/* Second Row — Phase 4 widgets (stubs for now) */}
+      {/* Row 2: Concept Mastery + Today's Goals */}
       <div className={styles.grid}>
-        <Card>
-          <h2 className={styles.cardTitle}>Concept Mastery</h2>
-          <EmptyState message="Mastery bars and charts coming in Phase 4." />
-        </Card>
-        <Card>
-          <h2 className={styles.cardTitle}>Today's Goals</h2>
-          <EmptyState message="Goals widget coming in Phase 4." />
-        </Card>
+        <ConceptMasterySummary />
+        <GoalsWidget />
+      </div>
+
+      {/* Row 3: Session Chart + Mastery Donut */}
+      <div className={styles.grid}>
+        <SessionChart />
+        <div>
+          <MasteryDonut />
+          <RecentlyMastered />
+        </div>
+      </div>
+
+      {/* Row 4: Patterns + Learning Path */}
+      <div className={styles.grid}>
+        <PatternLibrary />
+        <LearningPathWidget />
       </div>
 
       {/* Modals */}
@@ -72,6 +96,15 @@ export default function DashboardPage() {
         open={newProjectOpen}
         onClose={() => setNewProjectOpen(false)}
         onCreated={handleProjectCreated}
+      />
+      <CompareModal
+        open={compareOpen}
+        onClose={() => {
+          setCompareOpen(false);
+          setCompareIds([]);
+        }}
+        projectA={compareIds[0] ?? 0}
+        projectB={compareIds[1] ?? 0}
       />
     </div>
   );

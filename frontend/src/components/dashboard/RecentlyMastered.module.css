@@ -1,0 +1,23 @@
+.wrapper {
+  margin-top: var(--space-md);
+}
+
+.title {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  margin-bottom: var(--space-sm);
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+  font-size: var(--font-size-sm);
+}
+
+.count {
+  font-size: var(--font-size-xs);
+  opacity: 0.45;
+  font-variant-numeric: tabular-nums;
+}

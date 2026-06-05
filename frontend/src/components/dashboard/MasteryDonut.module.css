@@ -1,0 +1,32 @@
+.title {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  margin-bottom: var(--space-md);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xl);
+}
+
+.legend {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: var(--font-size-sm);
+  text-transform: capitalize;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-round);
+  flex-shrink: 0;
+}
